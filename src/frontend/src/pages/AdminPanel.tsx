@@ -39,33 +39,73 @@ function SubjectForm({
   examDate: initExam,
   practicalDate: initPractical,
   assignmentDetails: initAssignment,
+  teacherName: initTeacherName,
+  teacherEmail: initTeacherEmail,
+  progress: initProgress,
+  attendancePresent: initAttendancePresent,
+  attendanceTotal: initAttendanceTotal,
+  marks: initMarks,
   hasPractical,
   onSave,
   isSaving,
 }: {
   subjectName: string;
-  icon: React.ElementType;
+  icon: React.ComponentType<{ className?: string }>;
   examDate: string;
   practicalDate?: string;
   assignmentDetails: string;
+  teacherName: string;
+  teacherEmail: string;
+  progress: number;
+  attendancePresent: number;
+  attendanceTotal: number;
+  marks: string;
   hasPractical: boolean;
   onSave: (
     examDate: string,
     practicalDate: string,
     assignmentDetails: string,
+    teacherName: string,
+    teacherEmail: string,
+    progress: bigint,
+    attendancePresent: bigint,
+    attendanceTotal: bigint,
+    marks: string,
   ) => void;
   isSaving: boolean;
 }) {
   const [examDate, setExamDate] = useState(initExam);
   const [practicalDate, setPracticalDate] = useState(initPractical ?? "");
   const [assignmentDetails, setAssignmentDetails] = useState(initAssignment);
+  const [teacherName, setTeacherName] = useState(initTeacherName);
+  const [teacherEmail, setTeacherEmail] = useState(initTeacherEmail);
+  const [progress, setProgress] = useState(String(initProgress));
+  const [attendancePresent, setAttendancePresent] = useState(
+    String(initAttendancePresent),
+  );
+  const [attendanceTotal, setAttendanceTotal] = useState(
+    String(initAttendanceTotal),
+  );
+  const [marks, setMarks] = useState(initMarks);
   const [saved, setSaved] = useState(false);
 
   const handleSave = async () => {
-    await onSave(examDate, practicalDate, assignmentDetails);
+    await onSave(
+      examDate,
+      practicalDate,
+      assignmentDetails,
+      teacherName,
+      teacherEmail,
+      BigInt(Number(progress) || 0),
+      BigInt(Number(attendancePresent) || 0),
+      BigInt(Number(attendanceTotal) || 0),
+      marks,
+    );
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
+
+  const sn = subjectName.toLowerCase();
 
   return (
     <motion.div
@@ -86,7 +126,7 @@ function SubjectForm({
             Exam Date
           </Label>
           <Input
-            data-ocid={`admin.${subjectName.toLowerCase()}.exam_date.input`}
+            data-ocid={`admin.${sn}.exam_date.input`}
             value={examDate}
             onChange={(e) => setExamDate(e.target.value)}
             placeholder="e.g. 25 March 2026"
@@ -98,7 +138,7 @@ function SubjectForm({
               Practical Date
             </Label>
             <Input
-              data-ocid={`admin.${subjectName.toLowerCase()}.practical_date.input`}
+              data-ocid={`admin.${sn}.practical_date.input`}
               value={practicalDate}
               onChange={(e) => setPracticalDate(e.target.value)}
               placeholder="e.g. 28 March 2026"
@@ -112,7 +152,7 @@ function SubjectForm({
           Assignment Details
         </Label>
         <Textarea
-          data-ocid={`admin.${subjectName.toLowerCase()}.assignment.textarea`}
+          data-ocid={`admin.${sn}.assignment.textarea`}
           value={assignmentDetails}
           onChange={(e) => setAssignmentDetails(e.target.value)}
           placeholder="Describe the assignment details..."
@@ -120,10 +160,92 @@ function SubjectForm({
         />
       </div>
 
+      {/* Teacher Info */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Teacher Name
+          </Label>
+          <Input
+            data-ocid={`admin.${sn}.teacher_name.input`}
+            value={teacherName}
+            onChange={(e) => setTeacherName(e.target.value)}
+            placeholder="e.g. Dr. Sharma"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Teacher Email
+          </Label>
+          <Input
+            data-ocid={`admin.${sn}.teacher_email.input`}
+            type="email"
+            value={teacherEmail}
+            onChange={(e) => setTeacherEmail(e.target.value)}
+            placeholder="teacher@college.edu"
+          />
+        </div>
+      </div>
+
+      {/* Academic data */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Progress (0-100)
+          </Label>
+          <Input
+            data-ocid={`admin.${sn}.progress.input`}
+            type="number"
+            min="0"
+            max="100"
+            value={progress}
+            onChange={(e) => setProgress(e.target.value)}
+            placeholder="75"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Attendance Present
+          </Label>
+          <Input
+            data-ocid={`admin.${sn}.attendance_present.input`}
+            type="number"
+            min="0"
+            value={attendancePresent}
+            onChange={(e) => setAttendancePresent(e.target.value)}
+            placeholder="30"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Attendance Total
+          </Label>
+          <Input
+            data-ocid={`admin.${sn}.attendance_total.input`}
+            type="number"
+            min="0"
+            value={attendanceTotal}
+            onChange={(e) => setAttendanceTotal(e.target.value)}
+            placeholder="40"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Marks
+          </Label>
+          <Input
+            data-ocid={`admin.${sn}.marks.input`}
+            value={marks}
+            onChange={(e) => setMarks(e.target.value)}
+            placeholder="78/100"
+          />
+        </div>
+      </div>
+
       <div className="flex items-center gap-3">
         <Button
           type="button"
-          data-ocid={`admin.${subjectName.toLowerCase()}.save_button`}
+          data-ocid={`admin.${sn}.save_button`}
           onClick={handleSave}
           disabled={isSaving}
           className="bg-primary text-primary-foreground"
@@ -140,8 +262,8 @@ function SubjectForm({
         </Button>
         {saved && (
           <span
-            data-ocid={`admin.${subjectName.toLowerCase()}.success_state`}
-            className="flex items-center gap-1 text-sm text-green-600"
+            data-ocid={`admin.${sn}.success_state`}
+            className="flex items-center gap-1 text-sm text-green-400"
           >
             <CheckCircle className="h-4 w-4" /> Saved!
           </span>
@@ -164,15 +286,33 @@ export default function AdminPanel({ username, onLogout }: AdminPanelProps) {
     examDate: "",
     practicalDate: "",
     assignmentDetails: "",
+    teacherName: "",
+    teacherEmail: "",
+    progress: BigInt(0),
+    attendancePresent: BigInt(0),
+    attendanceTotal: BigInt(0),
+    marks: "",
   };
   const chemistry = subjectMap.get("Chemistry") ?? {
     examDate: "",
     practicalDate: "",
     assignmentDetails: "",
+    teacherName: "",
+    teacherEmail: "",
+    progress: BigInt(0),
+    attendancePresent: BigInt(0),
+    attendanceTotal: BigInt(0),
+    marks: "",
   };
   const math = subjectMap.get("Math") ?? {
     examDate: "",
     assignmentDetails: "",
+    teacherName: "",
+    teacherEmail: "",
+    progress: BigInt(0),
+    attendancePresent: BigInt(0),
+    attendanceTotal: BigInt(0),
+    marks: "",
   };
 
   const [notifList, setNotifList] = useState<{ id: number; text: string }[]>(
@@ -204,7 +344,6 @@ export default function AdminPanel({ username, onLogout }: AdminPanelProps) {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Admin header */}
       <header className="bg-primary text-primary-foreground">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
           <ShieldLogo size={30} />
@@ -278,12 +417,24 @@ export default function AdminPanel({ username, onLogout }: AdminPanelProps) {
                 examDate={physics.examDate}
                 practicalDate={physics.practicalDate}
                 assignmentDetails={physics.assignmentDetails}
+                teacherName={physics.teacherName ?? ""}
+                teacherEmail={physics.teacherEmail ?? ""}
+                progress={Number(physics.progress ?? 0)}
+                attendancePresent={Number(physics.attendancePresent ?? 0)}
+                attendanceTotal={Number(physics.attendanceTotal ?? 0)}
+                marks={physics.marks ?? ""}
                 hasPractical
-                onSave={(e, p, a) =>
+                onSave={(e, p, a, tn, te, pr, ap, at, m) =>
                   updatePhysics.mutateAsync({
                     examDate: e,
                     practicalDate: p,
                     assignmentDetails: a,
+                    teacherName: tn,
+                    teacherEmail: te,
+                    progress: pr,
+                    attendancePresent: ap,
+                    attendanceTotal: at,
+                    marks: m,
                   })
                 }
                 isSaving={updatePhysics.isPending}
@@ -297,12 +448,24 @@ export default function AdminPanel({ username, onLogout }: AdminPanelProps) {
                 examDate={chemistry.examDate}
                 practicalDate={chemistry.practicalDate}
                 assignmentDetails={chemistry.assignmentDetails}
+                teacherName={chemistry.teacherName ?? ""}
+                teacherEmail={chemistry.teacherEmail ?? ""}
+                progress={Number(chemistry.progress ?? 0)}
+                attendancePresent={Number(chemistry.attendancePresent ?? 0)}
+                attendanceTotal={Number(chemistry.attendanceTotal ?? 0)}
+                marks={chemistry.marks ?? ""}
                 hasPractical
-                onSave={(e, p, a) =>
+                onSave={(e, p, a, tn, te, pr, ap, at, m) =>
                   updateChemistry.mutateAsync({
                     examDate: e,
                     practicalDate: p,
                     assignmentDetails: a,
+                    teacherName: tn,
+                    teacherEmail: te,
+                    progress: pr,
+                    attendancePresent: ap,
+                    attendanceTotal: at,
+                    marks: m,
                   })
                 }
                 isSaving={updateChemistry.isPending}
@@ -315,9 +478,24 @@ export default function AdminPanel({ username, onLogout }: AdminPanelProps) {
                 icon={Calculator}
                 examDate={math.examDate}
                 assignmentDetails={math.assignmentDetails}
+                teacherName={math.teacherName ?? ""}
+                teacherEmail={math.teacherEmail ?? ""}
+                progress={Number(math.progress ?? 0)}
+                attendancePresent={Number(math.attendancePresent ?? 0)}
+                attendanceTotal={Number(math.attendanceTotal ?? 0)}
+                marks={math.marks ?? ""}
                 hasPractical={false}
-                onSave={(e, _p, a) =>
-                  updateMath.mutateAsync({ examDate: e, assignmentDetails: a })
+                onSave={(e, _p, a, tn, te, pr, ap, at, m) =>
+                  updateMath.mutateAsync({
+                    examDate: e,
+                    assignmentDetails: a,
+                    teacherName: tn,
+                    teacherEmail: te,
+                    progress: pr,
+                    attendancePresent: ap,
+                    attendanceTotal: at,
+                    marks: m,
+                  })
                 }
                 isSaving={updateMath.isPending}
               />
@@ -371,7 +549,6 @@ export default function AdminPanel({ username, onLogout }: AdminPanelProps) {
                   ))}
                 </div>
 
-                {/* Add new */}
                 <div className="flex gap-2">
                   <Input
                     data-ocid="admin.notifications.input"
@@ -412,7 +589,7 @@ export default function AdminPanel({ username, onLogout }: AdminPanelProps) {
                   {notifSaved && (
                     <span
                       data-ocid="admin.notifications.success_state"
-                      className="flex items-center gap-1 text-sm text-green-600"
+                      className="flex items-center gap-1 text-sm text-green-400"
                     >
                       <CheckCircle className="h-4 w-4" /> Saved!
                     </span>

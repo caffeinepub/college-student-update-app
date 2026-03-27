@@ -1,56 +1,57 @@
-import { Toaster } from "@/components/ui/sonner";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { Role } from "./backend";
 import AboutPage from "./pages/AboutPage";
 import AdminPanel from "./pages/AdminPanel";
+import CalendarPage from "./pages/CalendarPage";
 import ContactPage from "./pages/ContactPage";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
+import ProfilePage from "./pages/ProfilePage";
 import SubjectPage from "./pages/SubjectPage";
+import SubjectsListPage from "./pages/SubjectsListPage";
 
-const queryClient = new QueryClient();
+type Page =
+  | "login"
+  | "home"
+  | "subjects"
+  | "physics"
+  | "chemistry"
+  | "math"
+  | "admin"
+  | "calendar"
+  | "profile"
+  | "contact"
+  | "about";
 
-type AuthState = "unauthenticated" | "student" | "admin";
-type Page = "home" | "physics" | "chemistry" | "math" | "about" | "contact";
-
-function AppContent() {
-  const [authState, setAuthState] = useState<AuthState>("unauthenticated");
+export default function App() {
+  const [page, setPage] = useState<Page>("login");
   const [username, setUsername] = useState("");
-  const [currentPage, setCurrentPage] = useState<Page>("home");
 
-  const handleLoginSuccess = (role: Role, user: string) => {
-    setUsername(user);
-    setCurrentPage("home");
-    if (role === Role.admin) {
-      setAuthState("admin");
-    } else {
-      setAuthState("student");
-    }
-  };
+  function handleLoginSuccess(r: Role, u: string) {
+    setUsername(u);
+    setPage(r === Role.admin ? "admin" : "home");
+  }
 
-  const handleLogout = () => {
-    setAuthState("unauthenticated");
+  function handleLogout() {
     setUsername("");
-    setCurrentPage("home");
-  };
+    setPage("login");
+  }
 
-  const handleNavigate = (page: Page) => {
-    setCurrentPage(page);
-  };
+  function handleNavigate(p: string) {
+    setPage(p as Page);
+  }
 
-  if (authState === "unauthenticated") {
+  if (page === "login") {
     return <LoginPage onLoginSuccess={handleLoginSuccess} />;
   }
 
-  if (authState === "admin") {
+  if (page === "admin") {
     return <AdminPanel username={username} onLogout={handleLogout} />;
   }
 
-  // Student views
-  if (currentPage === "home") {
+  if (page === "subjects") {
     return (
-      <HomePage
+      <SubjectsListPage
         username={username}
         onNavigate={handleNavigate}
         onLogout={handleLogout}
@@ -58,21 +59,15 @@ function AppContent() {
     );
   }
 
-  if (currentPage === "physics") {
-    return (
-      <SubjectPage
-        subject="Physics"
-        username={username}
-        onNavigate={handleNavigate}
-        onLogout={handleLogout}
-      />
-    );
-  }
-
-  if (currentPage === "chemistry") {
+  if (page === "physics" || page === "chemistry" || page === "math") {
+    const subjectMap: Record<string, "Physics" | "Chemistry" | "Math"> = {
+      physics: "Physics",
+      chemistry: "Chemistry",
+      math: "Math",
+    };
     return (
       <SubjectPage
-        subject="Chemistry"
+        subject={subjectMap[page]}
         username={username}
         onNavigate={handleNavigate}
         onLogout={handleLogout}
@@ -80,10 +75,9 @@ function AppContent() {
     );
   }
 
-  if (currentPage === "math") {
+  if (page === "calendar") {
     return (
-      <SubjectPage
-        subject="Math"
+      <CalendarPage
         username={username}
         onNavigate={handleNavigate}
         onLogout={handleLogout}
@@ -91,9 +85,9 @@ function AppContent() {
     );
   }
 
-  if (currentPage === "about") {
+  if (page === "profile") {
     return (
-      <AboutPage
+      <ProfilePage
         username={username}
         onNavigate={handleNavigate}
         onLogout={handleLogout}
@@ -101,7 +95,7 @@ function AppContent() {
     );
   }
 
-  if (currentPage === "contact") {
+  if (page === "contact") {
     return (
       <ContactPage
         username={username}
@@ -111,20 +105,22 @@ function AppContent() {
     );
   }
 
+  if (page === "about") {
+    return (
+      <AboutPage
+        username={username}
+        onNavigate={handleNavigate}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
+  // default: home
   return (
     <HomePage
       username={username}
       onNavigate={handleNavigate}
       onLogout={handleLogout}
     />
-  );
-}
-
-export default function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AppContent />
-      <Toaster />
-    </QueryClientProvider>
   );
 }

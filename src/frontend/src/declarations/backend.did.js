@@ -14,7 +14,13 @@ export const UserRole = IDL.Variant({
   'guest' : IDL.Null,
 });
 export const Subject = IDL.Record({
+  'marks' : IDL.Text,
   'practicalDate' : IDL.Opt(IDL.Text),
+  'teacherEmail' : IDL.Text,
+  'attendanceTotal' : IDL.Nat,
+  'teacherName' : IDL.Text,
+  'attendancePresent' : IDL.Nat,
+  'progress' : IDL.Nat,
   'examDate' : IDL.Text,
   'assignmentDetails' : IDL.Text,
 });
@@ -27,7 +33,14 @@ export const Role = IDL.Variant({
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addAdminNote' : IDL.Func([IDL.Text, IDL.Text, IDL.Principal], [], []),
+  'addNote' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'getAllNotes' : IDL.Func(
+      [IDL.Text, IDL.Principal],
+      [IDL.Vec(IDL.Text)],
+      ['query'],
+    ),
   'getAllSubjectData' : IDL.Func(
       [],
       [IDL.Vec(IDL.Tuple(IDL.Text, Subject))],
@@ -35,8 +48,11 @@ export const idlService = IDL.Service({
     ),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getCompletedAssignments' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+  'getNotes' : IDL.Func([IDL.Text], [IDL.Vec(IDL.Text)], ['query']),
   'getNotifications' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
   'getRegisteredStudents' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+  'getScholarNumber' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -44,16 +60,65 @@ export const idlService = IDL.Service({
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'login' : IDL.Func([IDL.Text, IDL.Text], [Role], []),
+  'loginByScholarNumber' : IDL.Func([IDL.Text, IDL.Text], [Role], []),
+  'markAssignmentComplete' : IDL.Func([IDL.Text], [], []),
   'register' : IDL.Func(
-      [IDL.Text, IDL.Text, IDL.Text],
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
       [IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text })],
       [],
     ),
+  'resetAllCourseData' : IDL.Func([], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-  'updateChemistry' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
-  'updateMath' : IDL.Func([IDL.Text, IDL.Text], [], []),
+  'updateChemistry' : IDL.Func(
+      [
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Nat,
+        IDL.Nat,
+        IDL.Nat,
+        IDL.Text,
+      ],
+      [],
+      [],
+    ),
+  'updateMath' : IDL.Func(
+      [
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Nat,
+        IDL.Nat,
+        IDL.Nat,
+        IDL.Text,
+      ],
+      [],
+      [],
+    ),
   'updateNotifications' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
-  'updatePhysics' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
+  'updatePhysics' : IDL.Func(
+      [
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Nat,
+        IDL.Nat,
+        IDL.Nat,
+        IDL.Text,
+      ],
+      [],
+      [],
+    ),
+  'updateSubjectExtended' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Nat, IDL.Nat, IDL.Text],
+      [],
+      [],
+    ),
 });
 
 export const idlInitArgs = [];
@@ -65,7 +130,13 @@ export const idlFactory = ({ IDL }) => {
     'guest' : IDL.Null,
   });
   const Subject = IDL.Record({
+    'marks' : IDL.Text,
     'practicalDate' : IDL.Opt(IDL.Text),
+    'teacherEmail' : IDL.Text,
+    'attendanceTotal' : IDL.Nat,
+    'teacherName' : IDL.Text,
+    'attendancePresent' : IDL.Nat,
+    'progress' : IDL.Nat,
     'examDate' : IDL.Text,
     'assignmentDetails' : IDL.Text,
   });
@@ -78,7 +149,14 @@ export const idlFactory = ({ IDL }) => {
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addAdminNote' : IDL.Func([IDL.Text, IDL.Text, IDL.Principal], [], []),
+    'addNote' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'getAllNotes' : IDL.Func(
+        [IDL.Text, IDL.Principal],
+        [IDL.Vec(IDL.Text)],
+        ['query'],
+      ),
     'getAllSubjectData' : IDL.Func(
         [],
         [IDL.Vec(IDL.Tuple(IDL.Text, Subject))],
@@ -86,8 +164,11 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getCompletedAssignments' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+    'getNotes' : IDL.Func([IDL.Text], [IDL.Vec(IDL.Text)], ['query']),
     'getNotifications' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
     'getRegisteredStudents' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+    'getScholarNumber' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
@@ -95,16 +176,65 @@ export const idlFactory = ({ IDL }) => {
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'login' : IDL.Func([IDL.Text, IDL.Text], [Role], []),
+    'loginByScholarNumber' : IDL.Func([IDL.Text, IDL.Text], [Role], []),
+    'markAssignmentComplete' : IDL.Func([IDL.Text], [], []),
     'register' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Text],
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
         [IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text })],
         [],
       ),
+    'resetAllCourseData' : IDL.Func([], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-    'updateChemistry' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
-    'updateMath' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'updateChemistry' : IDL.Func(
+        [
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Nat,
+          IDL.Nat,
+          IDL.Nat,
+          IDL.Text,
+        ],
+        [],
+        [],
+      ),
+    'updateMath' : IDL.Func(
+        [
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Nat,
+          IDL.Nat,
+          IDL.Nat,
+          IDL.Text,
+        ],
+        [],
+        [],
+      ),
     'updateNotifications' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
-    'updatePhysics' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
+    'updatePhysics' : IDL.Func(
+        [
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Nat,
+          IDL.Nat,
+          IDL.Nat,
+          IDL.Text,
+        ],
+        [],
+        [],
+      ),
+    'updateSubjectExtended' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Nat, IDL.Nat, IDL.Text],
+        [],
+        [],
+      ),
   });
 };
 

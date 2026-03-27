@@ -90,7 +90,13 @@ export class ExternalBlob {
     }
 }
 export interface Subject {
+    marks: string;
     practicalDate?: string;
+    teacherEmail: string;
+    attendanceTotal: bigint;
+    teacherName: string;
+    attendancePresent: bigint;
+    progress: bigint;
     examDate: string;
     assignmentDetails: string;
 }
@@ -109,27 +115,37 @@ export enum UserRole {
 }
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
+    addAdminNote(subjectName: string, note: string, targetUser: Principal): Promise<void>;
+    addNote(subjectName: string, note: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    getAllNotes(subjectName: string, targetUser: Principal): Promise<Array<string>>;
     getAllSubjectData(): Promise<Array<[string, Subject]>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getCompletedAssignments(): Promise<Array<string>>;
+    getNotes(subjectName: string): Promise<Array<string>>;
     getNotifications(): Promise<Array<string>>;
     getRegisteredStudents(): Promise<Array<string>>;
+    getScholarNumber(username: string): Promise<string | null>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     login(username: string, password: string): Promise<Role>;
-    register(username: string, password: string, fullName: string): Promise<{
+    loginByScholarNumber(scholarNumber: string, password: string): Promise<Role>;
+    markAssignmentComplete(subjectName: string): Promise<void>;
+    register(username: string, password: string, fullName: string, scholarNumber: string): Promise<{
         __kind__: "ok";
         ok: null;
     } | {
         __kind__: "err";
         err: string;
     }>;
+    resetAllCourseData(): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
-    updateChemistry(examDate: string, practicalDate: string, assignmentDetails: string): Promise<void>;
-    updateMath(examDate: string, assignmentDetails: string): Promise<void>;
+    updateChemistry(examDate: string, practicalDate: string, assignmentDetails: string, teacherName: string, teacherEmail: string, progress: bigint, attendancePresent: bigint, attendanceTotal: bigint, marks: string): Promise<void>;
+    updateMath(examDate: string, assignmentDetails: string, teacherName: string, teacherEmail: string, progress: bigint, attendancePresent: bigint, attendanceTotal: bigint, marks: string): Promise<void>;
     updateNotifications(notifications: Array<string>): Promise<void>;
-    updatePhysics(examDate: string, practicalDate: string, assignmentDetails: string): Promise<void>;
+    updatePhysics(examDate: string, practicalDate: string, assignmentDetails: string, teacherName: string, teacherEmail: string, progress: bigint, attendancePresent: bigint, attendanceTotal: bigint, marks: string): Promise<void>;
+    updateSubjectExtended(subjectName: string, teacherName: string, teacherEmail: string, progress: bigint, attendanceTotal: bigint, marks: string): Promise<void>;
 }
 import type { Role as _Role, Subject as _Subject, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -148,6 +164,34 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async addAdminNote(arg0: string, arg1: string, arg2: Principal): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.addAdminNote(arg0, arg1, arg2);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.addAdminNote(arg0, arg1, arg2);
+            return result;
+        }
+    }
+    async addNote(arg0: string, arg1: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.addNote(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.addNote(arg0, arg1);
+            return result;
+        }
+    }
     async assignCallerUserRole(arg0: Principal, arg1: UserRole): Promise<void> {
         if (this.processError) {
             try {
@@ -159,6 +203,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n1(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
+    async getAllNotes(arg0: string, arg1: Principal): Promise<Array<string>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllNotes(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllNotes(arg0, arg1);
             return result;
         }
     }
@@ -204,6 +262,34 @@ export class Backend implements backendInterface {
             return from_candid_UserRole_n9(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getCompletedAssignments(): Promise<Array<string>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getCompletedAssignments();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getCompletedAssignments();
+            return result;
+        }
+    }
+    async getNotes(arg0: string): Promise<Array<string>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getNotes(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getNotes(arg0);
+            return result;
+        }
+    }
     async getNotifications(): Promise<Array<string>> {
         if (this.processError) {
             try {
@@ -230,6 +316,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getRegisteredStudents();
             return result;
+        }
+    }
+    async getScholarNumber(arg0: string): Promise<string | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getScholarNumber(arg0);
+                return from_candid_opt_n7(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getScholarNumber(arg0);
+            return from_candid_opt_n7(this._uploadFile, this._downloadFile, result);
         }
     }
     async getUserProfile(arg0: Principal): Promise<UserProfile | null> {
@@ -274,7 +374,35 @@ export class Backend implements backendInterface {
             return from_candid_Role_n11(this._uploadFile, this._downloadFile, result);
         }
     }
-    async register(arg0: string, arg1: string, arg2: string): Promise<{
+    async loginByScholarNumber(arg0: string, arg1: string): Promise<Role> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.loginByScholarNumber(arg0, arg1);
+                return from_candid_Role_n11(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.loginByScholarNumber(arg0, arg1);
+            return from_candid_Role_n11(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async markAssignmentComplete(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.markAssignmentComplete(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.markAssignmentComplete(arg0);
+            return result;
+        }
+    }
+    async register(arg0: string, arg1: string, arg2: string, arg3: string): Promise<{
         __kind__: "ok";
         ok: null;
     } | {
@@ -283,15 +411,29 @@ export class Backend implements backendInterface {
     }> {
         if (this.processError) {
             try {
-                const result = await this.actor.register(arg0, arg1, arg2);
+                const result = await this.actor.register(arg0, arg1, arg2, arg3);
                 return from_candid_variant_n13(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.register(arg0, arg1, arg2);
+            const result = await this.actor.register(arg0, arg1, arg2, arg3);
             return from_candid_variant_n13(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async resetAllCourseData(): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.resetAllCourseData();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.resetAllCourseData();
+            return result;
         }
     }
     async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
@@ -308,31 +450,31 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async updateChemistry(arg0: string, arg1: string, arg2: string): Promise<void> {
+    async updateChemistry(arg0: string, arg1: string, arg2: string, arg3: string, arg4: string, arg5: bigint, arg6: bigint, arg7: bigint, arg8: string): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.updateChemistry(arg0, arg1, arg2);
+                const result = await this.actor.updateChemistry(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.updateChemistry(arg0, arg1, arg2);
+            const result = await this.actor.updateChemistry(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
             return result;
         }
     }
-    async updateMath(arg0: string, arg1: string): Promise<void> {
+    async updateMath(arg0: string, arg1: string, arg2: string, arg3: string, arg4: bigint, arg5: bigint, arg6: bigint, arg7: string): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.updateMath(arg0, arg1);
+                const result = await this.actor.updateMath(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.updateMath(arg0, arg1);
+            const result = await this.actor.updateMath(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
             return result;
         }
     }
@@ -350,17 +492,31 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async updatePhysics(arg0: string, arg1: string, arg2: string): Promise<void> {
+    async updatePhysics(arg0: string, arg1: string, arg2: string, arg3: string, arg4: string, arg5: bigint, arg6: bigint, arg7: bigint, arg8: string): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.updatePhysics(arg0, arg1, arg2);
+                const result = await this.actor.updatePhysics(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.updatePhysics(arg0, arg1, arg2);
+            const result = await this.actor.updatePhysics(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+            return result;
+        }
+    }
+    async updateSubjectExtended(arg0: string, arg1: string, arg2: string, arg3: bigint, arg4: bigint, arg5: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateSubjectExtended(arg0, arg1, arg2, arg3, arg4, arg5);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateSubjectExtended(arg0, arg1, arg2, arg3, arg4, arg5);
             return result;
         }
     }
@@ -381,16 +537,34 @@ function from_candid_opt_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Ar
     return value.length === 0 ? null : value[0];
 }
 function from_candid_record_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    marks: string;
     practicalDate: [] | [string];
+    teacherEmail: string;
+    attendanceTotal: bigint;
+    teacherName: string;
+    attendancePresent: bigint;
+    progress: bigint;
     examDate: string;
     assignmentDetails: string;
 }): {
+    marks: string;
     practicalDate?: string;
+    teacherEmail: string;
+    attendanceTotal: bigint;
+    teacherName: string;
+    attendancePresent: bigint;
+    progress: bigint;
     examDate: string;
     assignmentDetails: string;
 } {
     return {
+        marks: value.marks,
         practicalDate: record_opt_to_undefined(from_candid_opt_n7(_uploadFile, _downloadFile, value.practicalDate)),
+        teacherEmail: value.teacherEmail,
+        attendanceTotal: value.attendanceTotal,
+        teacherName: value.teacherName,
+        attendancePresent: value.attendancePresent,
+        progress: value.progress,
         examDate: value.examDate,
         assignmentDetails: value.assignmentDetails
     };

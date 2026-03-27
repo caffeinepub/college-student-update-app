@@ -26,6 +26,55 @@ export function useNotifications() {
   });
 }
 
+export function useCompletedAssignments() {
+  const { actor, isFetching } = useActor();
+  return useQuery<string[]>({
+    queryKey: ["completedAssignments"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getCompletedAssignments();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useMarkAssignmentComplete() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (subjectName: string) => {
+      if (!actor) throw new Error("No actor");
+      return actor.markAssignmentComplete(subjectName);
+    },
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: ["completedAssignments"] }),
+  });
+}
+
+export function useNotes(subject: string) {
+  const { actor, isFetching } = useActor();
+  return useQuery<string[]>({
+    queryKey: ["notes", subject],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getNotes(subject);
+    },
+    enabled: !!actor && !isFetching && !!subject,
+  });
+}
+
+export function useAddNote(subject: string) {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (note: string) => {
+      if (!actor) throw new Error("No actor");
+      return actor.addNote(subject, note);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["notes", subject] }),
+  });
+}
+
 export function useUpdatePhysics() {
   const { actor } = useActor();
   const qc = useQueryClient();
@@ -34,12 +83,24 @@ export function useUpdatePhysics() {
       examDate: string;
       practicalDate: string;
       assignmentDetails: string;
+      teacherName: string;
+      teacherEmail: string;
+      progress: bigint;
+      attendancePresent: bigint;
+      attendanceTotal: bigint;
+      marks: string;
     }) => {
       if (!actor) throw new Error("No actor");
       return actor.updatePhysics(
         data.examDate,
         data.practicalDate,
         data.assignmentDetails,
+        data.teacherName,
+        data.teacherEmail,
+        data.progress,
+        data.attendancePresent,
+        data.attendanceTotal,
+        data.marks,
       );
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["subjectData"] }),
@@ -54,12 +115,24 @@ export function useUpdateChemistry() {
       examDate: string;
       practicalDate: string;
       assignmentDetails: string;
+      teacherName: string;
+      teacherEmail: string;
+      progress: bigint;
+      attendancePresent: bigint;
+      attendanceTotal: bigint;
+      marks: string;
     }) => {
       if (!actor) throw new Error("No actor");
       return actor.updateChemistry(
         data.examDate,
         data.practicalDate,
         data.assignmentDetails,
+        data.teacherName,
+        data.teacherEmail,
+        data.progress,
+        data.attendancePresent,
+        data.attendanceTotal,
+        data.marks,
       );
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["subjectData"] }),
@@ -73,9 +146,24 @@ export function useUpdateMath() {
     mutationFn: async (data: {
       examDate: string;
       assignmentDetails: string;
+      teacherName: string;
+      teacherEmail: string;
+      progress: bigint;
+      attendancePresent: bigint;
+      attendanceTotal: bigint;
+      marks: string;
     }) => {
       if (!actor) throw new Error("No actor");
-      return actor.updateMath(data.examDate, data.assignmentDetails);
+      return actor.updateMath(
+        data.examDate,
+        data.assignmentDetails,
+        data.teacherName,
+        data.teacherEmail,
+        data.progress,
+        data.attendancePresent,
+        data.attendanceTotal,
+        data.marks,
+      );
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["subjectData"] }),
   });

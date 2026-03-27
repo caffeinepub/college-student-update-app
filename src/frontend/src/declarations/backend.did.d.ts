@@ -14,7 +14,13 @@ export type Role = { 'admin' : null } |
   { 'invalid' : null } |
   { 'student' : null };
 export interface Subject {
+  'marks' : string,
   'practicalDate' : [] | [string],
+  'teacherEmail' : string,
+  'attendanceTotal' : bigint,
+  'teacherName' : string,
+  'attendancePresent' : bigint,
+  'progress' : bigint,
   'examDate' : string,
   'assignmentDetails' : string,
 }
@@ -24,25 +30,47 @@ export type UserRole = { 'admin' : null } |
   { 'guest' : null };
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'addAdminNote' : ActorMethod<[string, string, Principal], undefined>,
+  'addNote' : ActorMethod<[string, string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'getAllNotes' : ActorMethod<[string, Principal], Array<string>>,
   'getAllSubjectData' : ActorMethod<[], Array<[string, Subject]>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getCompletedAssignments' : ActorMethod<[], Array<string>>,
+  'getNotes' : ActorMethod<[string], Array<string>>,
   'getNotifications' : ActorMethod<[], Array<string>>,
   'getRegisteredStudents' : ActorMethod<[], Array<string>>,
+  'getScholarNumber' : ActorMethod<[string], [] | [string]>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'login' : ActorMethod<[string, string], Role>,
+  'loginByScholarNumber' : ActorMethod<[string, string], Role>,
+  'markAssignmentComplete' : ActorMethod<[string], undefined>,
   'register' : ActorMethod<
-    [string, string, string],
+    [string, string, string, string],
     { 'ok' : null } |
       { 'err' : string }
   >,
+  'resetAllCourseData' : ActorMethod<[], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
-  'updateChemistry' : ActorMethod<[string, string, string], undefined>,
-  'updateMath' : ActorMethod<[string, string], undefined>,
+  'updateChemistry' : ActorMethod<
+    [string, string, string, string, string, bigint, bigint, bigint, string],
+    undefined
+  >,
+  'updateMath' : ActorMethod<
+    [string, string, string, string, bigint, bigint, bigint, string],
+    undefined
+  >,
   'updateNotifications' : ActorMethod<[Array<string>], undefined>,
-  'updatePhysics' : ActorMethod<[string, string, string], undefined>,
+  'updatePhysics' : ActorMethod<
+    [string, string, string, string, string, bigint, bigint, bigint, string],
+    undefined
+  >,
+  'updateSubjectExtended' : ActorMethod<
+    [string, string, string, bigint, bigint, string],
+    undefined
+  >,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

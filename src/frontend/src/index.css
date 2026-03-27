@@ -3,61 +3,194 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "Plus Jakarta Sans";
-  src: url("/assets/fonts/PlusJakartaSans.woff2") format("woff2");
-  font-weight: 300 700;
+  font-family: "BricolageGrotesque";
+  src: url("/assets/fonts/BricolageGrotesque.woff2") format("woff2");
+  font-weight: 200 800;
   font-display: swap;
 }
 
-@layer base {
-  :root {
-    --radius: 0.625rem;
-    /* Navy #0F2A45 → oklch(0.22 0.058 236) */
-    --navy: 0.22 0.058 236;
-    /* Navy light for hero #132F4D → oklch(0.24 0.062 236) */
-    --navy-light: 0.24 0.062 236;
-    /* Page bg #F3F6F9 → oklch(0.967 0.009 236) */
-    --background: 0.967 0.009 236;
-    --foreground: 0.14 0.022 236;
-    --card: 1 0 0;
-    --card-foreground: 0.14 0.022 236;
-    --popover: 1 0 0;
-    --popover-foreground: 0.14 0.022 236;
-    /* Primary = navy */
-    --primary: 0.22 0.058 236;
-    --primary-foreground: 1 0 0;
-    --secondary: 0.945 0.009 236;
-    --secondary-foreground: 0.22 0.058 236;
-    --muted: 0.945 0.009 236;
-    --muted-foreground: 0.52 0.018 236;
-    --accent: 0.88 0.015 236;
-    --accent-foreground: 0.22 0.058 236;
-    --destructive: 0.577 0.245 27.325;
-    --destructive-foreground: 1 0 0;
-    --border: 0.88 0.012 236;
-    --input: 0.88 0.012 236;
-    --ring: 0.22 0.058 236;
-    --chart-1: 0.646 0.222 41.116;
-    --chart-2: 0.6 0.118 184.704;
-    --chart-3: 0.398 0.07 227.392;
-    --chart-4: 0.828 0.189 84.429;
-    --chart-5: 0.769 0.188 70.08;
-    --sidebar: 0.22 0.058 236;
-    --sidebar-foreground: 1 0 0;
-    --sidebar-primary: 1 0 0;
-    --sidebar-primary-foreground: 0.22 0.058 236;
-    --sidebar-accent: 0.28 0.065 236;
-    --sidebar-accent-foreground: 1 0 0;
-    --sidebar-border: 0.28 0.065 236;
-    --sidebar-ring: 0.5 0.02 236;
-  }
+:root {
+  --background: 10 5% 3%;
+  --foreground: 60 5% 96%;
+  --card: 10 5% 8%;
+  --card-foreground: 60 5% 96%;
+  --popover: 10 5% 8%;
+  --popover-foreground: 60 5% 96%;
+  --primary: 38 90% 55%;
+  --primary-foreground: 10 5% 3%;
+  --secondary: 200 80% 50%;
+  --secondary-foreground: 10 5% 3%;
+  --muted: 10 5% 15%;
+  --muted-foreground: 60 5% 80%;
+  --accent: 280 80% 60%;
+  --accent-foreground: 60 5% 96%;
+  --destructive: 0 80% 55%;
+  --destructive-foreground: 60 5% 96%;
+  --border: 10 5% 18%;
+  --input: 10 5% 18%;
+  --ring: 38 90% 55%;
+  --radius: 0.75rem;
+}
 
-  * {
-    @apply border-border;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  background: #000;
+  font-family: "BricolageGrotesque", "Plus Jakarta Sans", system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ── Glass card utilities ── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(120, 160, 255, 0.15);
+}
+
+.glass-card-strong {
+  background: rgba(10, 15, 40, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 2px solid rgba(100, 140, 255, 0.25);
+  box-shadow: 0 0 40px rgba(80, 120, 255, 0.12), 0 32px 64px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.shadow-glass {
+  box-shadow: 0 0 40px rgba(80, 120, 255, 0.12), 0 32px 64px rgba(0, 0, 0, 0.6);
+}
+
+/* ── Active tab ── */
+.tab-active {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #fff !important;
+  font-weight: 700;
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Primary glow button ── */
+.btn-primary-glow {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  box-shadow: 0 0 24px rgba(99, 102, 241, 0.5), 0 4px 16px
+    rgba(59, 130, 246, 0.35);
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.btn-primary-glow:hover:not(:disabled) {
+  box-shadow: 0 0 36px rgba(99, 102, 241, 0.7), 0 6px 24px
+    rgba(59, 130, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-primary-glow:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* ── Shimmer text ── */
+@keyframes shimmer-move {
+  0% {
+    background-position: -200% center;
   }
-  body {
-    @apply bg-background text-foreground;
-    font-family: "Plus Jakarta Sans", "Inter", "Segoe UI", Helvetica, Arial,
-      sans-serif;
+  100% {
+    background-position: 200% center;
   }
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #60a5fa 0%,
+    #a78bfa 30%,
+    #fff 50%,
+    #a78bfa 70%,
+    #60a5fa 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-move 3.5s linear infinite;
+}
+
+/* ── Input glow ── */
+.input-glow:focus {
+  border-color: rgba(99, 102, 241, 0.7) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18), 0 0 12px
+    rgba(99, 102, 241, 0.25);
+}
+
+/* ── Animated neon border ── */
+@keyframes neon-border-cycle {
+  0% {
+    border-color: rgba(59, 130, 246, 0.35);
+  }
+  33% {
+    border-color: rgba(139, 92, 246, 0.35);
+  }
+  66% {
+    border-color: rgba(99, 102, 241, 0.35);
+  }
+  100% {
+    border-color: rgba(59, 130, 246, 0.35);
+  }
+}
+
+.animate-neon-border {
+  animation: neon-border-cycle 6s linear infinite;
+}
+
+/* ── Pulse glow ── */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 28px rgba(139, 92, 246, 0.6);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* ── Shake animation ── */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-8px);
+  }
+  30% {
+    transform: translateX(8px);
+  }
+  45% {
+    transform: translateX(-6px);
+  }
+  60% {
+    transform: translateX(6px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+  90% {
+    transform: translateX(3px);
+  }
+}
+
+.animate-shake {
+  animation: shake 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }

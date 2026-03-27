@@ -17,10 +17,10 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Plus Jakarta Sans', 'Inter', 'Segoe UI', 'Helvetica', 'Arial', 'sans-serif'],
+        display: ['Bricolage Grotesque', 'Plus Jakarta Sans', 'Inter', 'sans-serif'],
       },
       colors: {
-        navy: "oklch(var(--navy))",
-        border: "oklch(var(--border))",
+        border: "oklch(var(--border) / <alpha-value>)",
         input: "oklch(var(--input))",
         ring: "oklch(var(--ring) / <alpha-value>)",
         background: "oklch(var(--background))",
@@ -75,10 +75,16 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xl: "calc(var(--radius) + 4px)",
+        "2xl": "calc(var(--radius) + 8px)",
+        "3xl": "calc(var(--radius) + 14px)",
       },
       boxShadow: {
-        xs: "0 1px 2px 0 rgba(0,0,0,0.05)",
-        card: "0 2px 8px 0 rgba(15,42,69,0.08), 0 0 0 1px rgba(15,42,69,0.05)",
+        xs: "0 1px 2px 0 rgba(0,0,0,0.15)",
+        card: "0 4px 16px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.05)",
+        glow: "0 0 20px rgba(96,165,250,0.4), 0 0 40px rgba(96,165,250,0.1)",
+        "glow-sm": "0 0 12px rgba(96,165,250,0.3)",
+        glass: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)",
       },
       keyframes: {
         "accordion-down": {
