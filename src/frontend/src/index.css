@@ -9,26 +9,35 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "PlusJakartaSans";
+  src: url("/assets/fonts/PlusJakartaSans.woff2") format("woff2");
+  font-weight: 300 700;
+  font-display: swap;
+}
+
 :root {
-  --background: 10 5% 3%;
-  --foreground: 60 5% 96%;
-  --card: 10 5% 8%;
-  --card-foreground: 60 5% 96%;
-  --popover: 10 5% 8%;
-  --popover-foreground: 60 5% 96%;
-  --primary: 38 90% 55%;
-  --primary-foreground: 10 5% 3%;
-  --secondary: 200 80% 50%;
-  --secondary-foreground: 10 5% 3%;
-  --muted: 10 5% 15%;
-  --muted-foreground: 60 5% 80%;
-  --accent: 280 80% 60%;
-  --accent-foreground: 60 5% 96%;
-  --destructive: 0 80% 55%;
-  --destructive-foreground: 60 5% 96%;
-  --border: 10 5% 18%;
-  --input: 10 5% 18%;
-  --ring: 38 90% 55%;
+  /* Light theme — OKLCH tokens */
+  --background: 0.97 0.008 264;
+  --foreground: 0.18 0.025 264;
+  --card: 1.0 0 0;
+  --card-foreground: 0.18 0.025 264;
+  --popover: 1.0 0 0;
+  --popover-foreground: 0.18 0.025 264;
+  --primary: 0.47 0.22 264;
+  --primary-foreground: 1.0 0 0;
+  --secondary: 0.93 0.04 264;
+  --secondary-foreground: 0.47 0.22 264;
+  --muted: 0.94 0.015 264;
+  --muted-foreground: 0.55 0.04 264;
+  --accent: 0.65 0.18 200;
+  --accent-foreground: 1.0 0 0;
+  --destructive: 0.58 0.22 25;
+  --destructive-foreground: 1.0 0 0;
+  --success: 0.65 0.18 155;
+  --border: 0.9 0.02 264;
+  --input: 0.9 0.02 264;
+  --ring: 0.47 0.22 264;
   --radius: 0.75rem;
 }
 
@@ -43,53 +52,51 @@ body,
 #root {
   width: 100%;
   min-height: 100%;
-  background: #000;
-  font-family: "BricolageGrotesque", "Plus Jakarta Sans", system-ui, sans-serif;
+  background: oklch(0.97 0.008 264);
+  font-family: "PlusJakartaSans", "BricolageGrotesque", system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  user-select: none;
+  color: oklch(0.18 0.025 264);
 }
 
-/* ── Glass card utilities ── */
+/* ── Light glass card ── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(120, 160, 255, 0.15);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  box-shadow: 0 4px 24px rgba(99, 102, 241, 0.07);
 }
 
 .glass-card-strong {
-  background: rgba(10, 15, 40, 0.85);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 2px solid rgba(100, 140, 255, 0.25);
-  box-shadow: 0 0 40px rgba(80, 120, 255, 0.12), 0 32px 64px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(99, 102, 241, 0.18);
+  box-shadow: 0 8px 40px rgba(99, 102, 241, 0.12), 0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .shadow-glass {
-  box-shadow: 0 0 40px rgba(80, 120, 255, 0.12), 0 32px 64px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 4px 24px rgba(99, 102, 241, 0.1), 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 /* ── Active tab ── */
 .tab-active {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
   color: #fff !important;
   font-weight: 700;
-  box-shadow: 0 0 16px rgba(99, 102, 241, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 12px rgba(79, 70, 229, 0.35);
 }
 
-/* ── Primary glow button ── */
+/* ── Primary gradient button ── */
 .btn-primary-glow {
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  box-shadow: 0 0 24px rgba(99, 102, 241, 0.5), 0 4px 16px
-    rgba(59, 130, 246, 0.35);
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.35);
   transition: box-shadow 0.2s ease, transform 0.15s ease;
 }
 
 .btn-primary-glow:hover:not(:disabled) {
-  box-shadow: 0 0 36px rgba(99, 102, 241, 0.7), 0 6px 24px
-    rgba(59, 130, 246, 0.5);
+  box-shadow: 0 6px 28px rgba(79, 70, 229, 0.5);
   transform: translateY(-1px);
 }
 
@@ -97,67 +104,44 @@ body,
   transform: translateY(0);
 }
 
-/* ── Shimmer text ── */
-@keyframes shimmer-move {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
-}
-
+/* ── Gradient text (ACADEMIA logo) ── */
 .shimmer-text {
-  background: linear-gradient(
-    90deg,
-    #60a5fa 0%,
-    #a78bfa 30%,
-    #fff 50%,
-    #a78bfa 70%,
-    #60a5fa 100%
-  );
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #2563eb 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: shimmer-move 3.5s linear infinite;
 }
 
-/* ── Input glow ── */
+/* ── Input focus glow ── */
 .input-glow:focus {
-  border-color: rgba(99, 102, 241, 0.7) !important;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18), 0 0 12px
-    rgba(99, 102, 241, 0.25);
+  border-color: rgba(79, 70, 229, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12) !important;
 }
 
-/* ── Animated neon border ── */
-@keyframes neon-border-cycle {
-  0% {
-    border-color: rgba(59, 130, 246, 0.35);
-  }
-  33% {
-    border-color: rgba(139, 92, 246, 0.35);
-  }
-  66% {
-    border-color: rgba(99, 102, 241, 0.35);
-  }
+/* ── Subtle border animation on login card ── */
+@keyframes border-pulse {
+  0%,
   100% {
-    border-color: rgba(59, 130, 246, 0.35);
+    border-color: rgba(79, 70, 229, 0.2);
+  }
+  50% {
+    border-color: rgba(124, 58, 237, 0.35);
   }
 }
 
 .animate-neon-border {
-  animation: neon-border-cycle 6s linear infinite;
+  animation: border-pulse 4s ease-in-out infinite;
 }
 
-/* ── Pulse glow ── */
+/* ── Soft pulse shadow ── */
 @keyframes pulse-glow {
   0%,
   100% {
-    box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 20px rgba(79, 70, 229, 0.2);
   }
   50% {
-    box-shadow: 0 0 28px rgba(139, 92, 246, 0.6);
+    box-shadow: 0 4px 32px rgba(124, 58, 237, 0.4);
   }
 }
 
@@ -193,4 +177,21 @@ body,
 
 .animate-shake {
   animation: shake 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* ── Card hover lift ── */
+.card-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(79, 70, 229, 0.15);
+}
+
+/* ── Gradient heading text ── */
+.gradient-heading {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

@@ -343,7 +343,10 @@ export default function AdminPanel({ username, onLogout }: AdminPanelProps) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div
+      className="min-h-screen flex flex-col"
+      style={{ background: "oklch(0.97 0.008 264)" }}
+    >
       <header className="bg-primary text-primary-foreground">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
           <ShieldLogo size={30} />

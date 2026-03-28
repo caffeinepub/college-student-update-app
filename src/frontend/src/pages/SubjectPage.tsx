@@ -171,7 +171,7 @@ function SubjectCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.09, duration: 0.4 }}
       data-ocid={`subjects.item.${index + 1}`}
-      className={`group relative overflow-hidden rounded-2xl border border-white/10 backdrop-blur-md bg-white/5 transition-all duration-300 ${config.glowHover}`}
+      className={`group relative overflow-hidden rounded-2xl border border-slate-100 backdrop-blur-md bg-slate-50 transition-all duration-300 ${config.glowHover}`}
     >
       {/* Gradient overlay */}
       <div
@@ -230,11 +230,11 @@ function SubjectCard({
           >
             <div className="relative px-5 pb-5 space-y-4">
               {/* Divider */}
-              <div className="border-t border-white/10" />
+              <div className="border-t border-slate-100" />
 
               {/* Dates */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="bg-white/5 rounded-xl border border-white/10 p-3.5">
+                <div className="bg-slate-50 rounded-xl border border-slate-100 p-3.5">
                   <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
                     📅 Exam Date
                   </p>
@@ -243,7 +243,7 @@ function SubjectCard({
                   </p>
                 </div>
                 {config.hasPractical && (
-                  <div className="bg-white/5 rounded-xl border border-white/10 p-3.5">
+                  <div className="bg-slate-50 rounded-xl border border-slate-100 p-3.5">
                     <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
                       🧪 Practical Date
                     </p>
@@ -265,7 +265,7 @@ function SubjectCard({
               {/* Assignment card */}
               <div
                 data-ocid={`subjects.item.${index + 1}.assignment.card`}
-                className="bg-white/5 rounded-xl border border-white/10 p-4"
+                className="bg-slate-50 rounded-xl border border-slate-100 p-4"
               >
                 <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-1">
                   <ClipboardList className="h-3.5 w-3.5" /> Assignment
@@ -384,7 +384,7 @@ export default function SubjectPage({
           <Button
             data-ocid="subjects.back_dashboard.button"
             variant="ghost"
-            className="text-muted-foreground hover:text-foreground border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 transition-all duration-200"
+            className="text-muted-foreground hover:text-foreground border border-slate-100 hover:border-slate-200 bg-slate-50 hover:bg-slate-100 transition-all duration-200"
             onClick={() => onNavigate("home")}
           >
             <ArrowLeft className="h-4 w-4 mr-2" /> Back to Dashboard
@@ -425,7 +425,7 @@ export default function SubjectPage({
               className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 border ${
                 filter === tab
                   ? "bg-gradient-to-r from-blue-500/25 to-purple-500/20 border-blue-400/50 text-blue-300 shadow-[0_0_14px_rgba(96,165,250,0.25)]"
-                  : "border-white/10 text-muted-foreground hover:border-white/20 hover:text-foreground bg-white/5"
+                  : "border-slate-100 text-muted-foreground hover:border-slate-200 hover:text-foreground bg-slate-50"
               }`}
             >
               {tab}
@@ -437,7 +437,7 @@ export default function SubjectPage({
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[1, 2, 3].map((n) => (
-              <Skeleton key={n} className="h-24 rounded-2xl bg-white/10" />
+              <Skeleton key={n} className="h-24 rounded-2xl bg-slate-100" />
             ))}
           </div>
         ) : filteredSubjects.length === 0 ? (

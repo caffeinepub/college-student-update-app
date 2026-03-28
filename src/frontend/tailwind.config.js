@@ -10,14 +10,12 @@ export default {
     container: {
       center: true,
       padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
+      screens: { "2xl": "1400px" },
     },
     extend: {
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'Inter', 'Segoe UI', 'Helvetica', 'Arial', 'sans-serif'],
-        display: ['Bricolage Grotesque', 'Plus Jakarta Sans', 'Inter', 'sans-serif'],
+        sans: ["PlusJakartaSans", "Plus Jakarta Sans", "system-ui", "sans-serif"],
+        display: ["BricolageGrotesque", "Bricolage Grotesque", "system-ui", "sans-serif"],
       },
       colors: {
         border: "oklch(var(--border) / <alpha-value>)",
@@ -53,23 +51,6 @@ export default {
           DEFAULT: "oklch(var(--card))",
           foreground: "oklch(var(--card-foreground))",
         },
-        chart: {
-          1: "oklch(var(--chart-1))",
-          2: "oklch(var(--chart-2))",
-          3: "oklch(var(--chart-3))",
-          4: "oklch(var(--chart-4))",
-          5: "oklch(var(--chart-5))",
-        },
-        sidebar: {
-          DEFAULT: "oklch(var(--sidebar))",
-          foreground: "oklch(var(--sidebar-foreground))",
-          primary: "oklch(var(--sidebar-primary))",
-          "primary-foreground": "oklch(var(--sidebar-primary-foreground))",
-          accent: "oklch(var(--sidebar-accent))",
-          "accent-foreground": "oklch(var(--sidebar-accent-foreground))",
-          border: "oklch(var(--sidebar-border))",
-          ring: "oklch(var(--sidebar-ring))",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -80,11 +61,12 @@ export default {
         "3xl": "calc(var(--radius) + 14px)",
       },
       boxShadow: {
-        xs: "0 1px 2px 0 rgba(0,0,0,0.15)",
-        card: "0 4px 16px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.05)",
-        glow: "0 0 20px rgba(96,165,250,0.4), 0 0 40px rgba(96,165,250,0.1)",
-        "glow-sm": "0 0 12px rgba(96,165,250,0.3)",
-        glass: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)",
+        xs: "0 1px 3px rgba(0,0,0,0.08)",
+        card: "0 4px 24px rgba(79,70,229,0.08), 0 1px 4px rgba(0,0,0,0.04)",
+        "card-hover": "0 12px 40px rgba(79,70,229,0.14), 0 2px 8px rgba(0,0,0,0.06)",
+        glow: "0 0 24px rgba(79,70,229,0.3)",
+        "glow-sm": "0 0 12px rgba(79,70,229,0.2)",
+        glass: "0 8px 32px rgba(79,70,229,0.1), inset 0 1px 0 rgba(255,255,255,0.8)",
       },
       keyframes: {
         "accordion-down": {

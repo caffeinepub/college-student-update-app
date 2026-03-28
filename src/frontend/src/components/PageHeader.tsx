@@ -34,7 +34,14 @@ export default function PageHeader({
   ];
 
   return (
-    <header className="bg-card/80 backdrop-blur-xl border-b border-border/40 shadow-glass sticky top-0 z-40">
+    <header
+      className="sticky top-0 z-40 backdrop-blur-xl border-b"
+      style={{
+        background: "rgba(255,255,255,0.88)",
+        borderBottomColor: "rgba(79,70,229,0.1)",
+        boxShadow: "0 2px 20px rgba(79,70,229,0.07)",
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-4">
         {/* Logo */}
         <button
@@ -43,14 +50,20 @@ export default function PageHeader({
           onClick={() => onNavigate("home")}
           aria-label="Go to home"
         >
-          <div className="text-primary">
+          <div style={{ color: "#4f46e5" }}>
             <ShieldLogo size={32} />
           </div>
           <div className="text-left">
-            <div className="font-bold text-sm leading-none text-foreground tracking-wider">
+            <div
+              className="font-bold text-sm leading-none tracking-wider font-display"
+              style={{ color: "#4f46e5" }}
+            >
               ACADEMIA
             </div>
-            <div className="text-xs text-muted-foreground leading-none mt-0.5 tracking-widest">
+            <div
+              className="text-xs leading-none mt-0.5 tracking-widest font-medium"
+              style={{ color: "#7c3aed" }}
+            >
               STUDENT PORTAL
             </div>
           </div>
@@ -72,11 +85,18 @@ export default function PageHeader({
                 key={link.page}
                 data-ocid={`nav.${link.label.toLowerCase()}.link`}
                 onClick={() => onNavigate(link.page)}
-                className={`px-3 py-1.5 text-sm rounded-lg transition-all flex items-center gap-1.5 ${
+                className="px-3 py-1.5 text-sm rounded-xl transition-all flex items-center gap-1.5 font-medium"
+                style={
                   isActive
-                    ? "bg-primary/20 text-primary font-semibold"
-                    : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-                }`}
+                    ? {
+                        background:
+                          "linear-gradient(135deg, rgba(79,70,229,0.1), rgba(124,58,237,0.1))",
+                        color: "#4f46e5",
+                        fontWeight: 700,
+                        boxShadow: "inset 0 0 0 1px rgba(79,70,229,0.2)",
+                      }
+                    : { color: "#6b7280" }
+                }
               >
                 {Icon && <Icon className="h-3.5 w-3.5" />}
                 {link.label}
@@ -85,7 +105,6 @@ export default function PageHeader({
           })}
         </nav>
 
-        {/* Spacer */}
         <div className="flex-1" />
 
         {/* Profile + Logout */}
@@ -94,14 +113,19 @@ export default function PageHeader({
             type="button"
             data-ocid="nav.profile.link"
             onClick={() => onNavigate("profile")}
-            className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all text-sm ${
+            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all text-sm font-medium"
+            style={
               currentPage === "profile"
-                ? "bg-primary/20 text-primary font-semibold"
-                : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-            }`}
+                ? {
+                    background: "rgba(79,70,229,0.08)",
+                    color: "#4f46e5",
+                    fontWeight: 700,
+                  }
+                : { color: "#6b7280" }
+            }
           >
             <User className="h-4 w-4" />
-            <span className="font-medium">{username}</span>
+            <span>{username}</span>
           </button>
           <Button
             type="button"
@@ -109,7 +133,12 @@ export default function PageHeader({
             onClick={onLogout}
             size="sm"
             variant="outline"
-            className="border-border/40 text-muted-foreground hover:text-foreground hover:bg-white/8 rounded-xl"
+            className="rounded-xl text-sm font-semibold"
+            style={{
+              borderColor: "rgba(79,70,229,0.2)",
+              color: "#4f46e5",
+              background: "rgba(79,70,229,0.04)",
+            }}
           >
             <LogOut className="h-4 w-4 mr-1" />
             Log Out
@@ -118,11 +147,16 @@ export default function PageHeader({
       </div>
 
       {/* Mobile nav */}
-      <div className="md:hidden border-t border-border/20">
+      <div
+        className="md:hidden border-t"
+        style={{ borderColor: "rgba(79,70,229,0.08)" }}
+      >
         <div className="max-w-7xl mx-auto px-4 flex gap-1 py-1.5 overflow-x-auto">
-          {navLinks.map((link) => {
-            const isActive = link.activePages
-              ? link.activePages.includes(currentPage)
+          {[...navLinks, { label: "Profile", page: "profile" }].map((link) => {
+            const isActive = (link as { activePages?: string[] }).activePages
+              ? (link as { activePages?: string[] }).activePages!.includes(
+                  currentPage,
+                )
               : currentPage === link.page;
             return (
               <button
@@ -130,28 +164,17 @@ export default function PageHeader({
                 key={link.page}
                 data-ocid={`mobile.nav.${link.label.toLowerCase()}.link`}
                 onClick={() => onNavigate(link.page)}
-                className={`px-3 py-1 text-xs whitespace-nowrap rounded-lg transition-all ${
+                className="px-3 py-1 text-xs whitespace-nowrap rounded-lg transition-all font-semibold"
+                style={
                   isActive
-                    ? "bg-primary/20 text-primary font-semibold"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                    ? { background: "rgba(79,70,229,0.1)", color: "#4f46e5" }
+                    : { color: "#6b7280" }
+                }
               >
                 {link.label}
               </button>
             );
           })}
-          <button
-            type="button"
-            data-ocid="mobile.nav.profile.link"
-            onClick={() => onNavigate("profile")}
-            className={`px-3 py-1 text-xs whitespace-nowrap rounded-lg transition-all ${
-              currentPage === "profile"
-                ? "bg-primary/20 text-primary font-semibold"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            Profile
-          </button>
         </div>
       </div>
     </header>

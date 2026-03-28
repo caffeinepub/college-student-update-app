@@ -46,33 +46,33 @@ const subjectConfig = [
     key: "Physics",
     page: "physics" as Page,
     icon: BookOpen,
-    gradient: "from-blue-600/40 via-blue-500/15 to-transparent",
-    accent: "border-blue-500/50 hover:border-blue-400/80",
-    iconBg: "bg-blue-500/25 text-blue-300",
-    dotColor: "bg-blue-400",
-    glowColor: "hover:shadow-blue-500/30",
+    gradient: "from-indigo-100 via-blue-50/50 to-white/0",
+    accent: "border-indigo-200 hover:border-indigo-400",
+    iconBg: "bg-indigo-100 text-indigo-600",
+    dotColor: "bg-indigo-500",
+    glowColor: "hover:shadow-indigo-200",
     hasPractical: true,
   },
   {
     key: "Chemistry",
     page: "chemistry" as Page,
     icon: FlaskConical,
-    gradient: "from-emerald-600/40 via-emerald-500/15 to-transparent",
-    accent: "border-emerald-500/50 hover:border-emerald-400/80",
-    iconBg: "bg-emerald-500/25 text-emerald-300",
-    dotColor: "bg-emerald-400",
-    glowColor: "hover:shadow-emerald-500/30",
+    gradient: "from-emerald-100 via-green-50/50 to-white/0",
+    accent: "border-emerald-200 hover:border-emerald-400",
+    iconBg: "bg-emerald-100 text-emerald-700",
+    dotColor: "bg-emerald-500",
+    glowColor: "hover:shadow-emerald-200",
     hasPractical: true,
   },
   {
     key: "Math",
     page: "math" as Page,
     icon: Calculator,
-    gradient: "from-orange-600/40 via-orange-500/15 to-transparent",
-    accent: "border-orange-500/50 hover:border-orange-400/80",
-    iconBg: "bg-orange-500/25 text-orange-300",
-    dotColor: "bg-orange-400",
-    glowColor: "hover:shadow-orange-500/30",
+    gradient: "from-orange-100 via-amber-50/50 to-white/0",
+    accent: "border-orange-200 hover:border-orange-400",
+    iconBg: "bg-orange-100 text-orange-700",
+    dotColor: "bg-orange-500",
+    glowColor: "hover:shadow-orange-200",
     hasPractical: false,
   },
 ];
@@ -182,10 +182,10 @@ function CountdownBadge({ examDate }: { examDate: string }) {
     );
   const color =
     days <= 3
-      ? "bg-red-500/30 text-red-200 border-red-500/50"
+      ? "bg-red-50 text-red-600 border-red-200"
       : days <= 7
-        ? "bg-yellow-500/30 text-yellow-200 border-yellow-500/50"
-        : "bg-green-500/30 text-green-200 border-green-500/50";
+        ? "bg-amber-50 text-amber-600 border-amber-200"
+        : "bg-emerald-50 text-emerald-600 border-emerald-200";
   return (
     <span
       className={`text-xs px-2 py-0.5 rounded-full border font-bold ${color}`}
@@ -197,22 +197,22 @@ function CountdownBadge({ examDate }: { examDate: string }) {
 
 function SkeletonCard() {
   return (
-    <div className="glass-card rounded-2xl border border-white/10 p-5 space-y-3">
+    <div className="rounded-2xl border border-slate-100 bg-white p-5 space-y-3 shadow-sm">
       <div className="flex items-center gap-3">
-        <Skeleton className="w-12 h-12 rounded-xl bg-white/10" />
+        <Skeleton className="w-12 h-12 rounded-xl bg-slate-100" />
         <div className="space-y-1.5 flex-1">
-          <Skeleton className="h-4 w-24 bg-white/10" />
-          <Skeleton className="h-3 w-32 bg-white/10" />
+          <Skeleton className="h-4 w-24 bg-slate-100" />
+          <Skeleton className="h-3 w-32 bg-slate-100" />
         </div>
       </div>
-      <Skeleton className="h-2 w-full bg-white/10 rounded-full" />
+      <Skeleton className="h-2 w-full bg-slate-100 rounded-full" />
       <div className="flex gap-2">
-        <Skeleton className="h-5 w-20 bg-white/10 rounded-full" />
-        <Skeleton className="h-5 w-16 bg-white/10 rounded-full" />
+        <Skeleton className="h-5 w-20 bg-slate-100 rounded-full" />
+        <Skeleton className="h-5 w-16 bg-slate-100 rounded-full" />
       </div>
       <div className="flex gap-2 pt-1">
-        <Skeleton className="h-7 w-24 bg-white/10 rounded-lg" />
-        <Skeleton className="h-7 w-28 bg-white/10 rounded-lg" />
+        <Skeleton className="h-7 w-24 bg-slate-100 rounded-lg" />
+        <Skeleton className="h-7 w-28 bg-slate-100 rounded-lg" />
       </div>
     </div>
   );
@@ -316,7 +316,10 @@ export default function HomePage({
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div
+      className="min-h-screen flex flex-col"
+      style={{ background: "oklch(0.97 0.008 264)" }}
+    >
       <PageHeader
         username={username}
         currentPage="home"
@@ -330,18 +333,30 @@ export default function HomePage({
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           data-ocid="home.notifications.panel"
-          className="bg-primary/20 border-b border-primary/30"
+          className="border-b"
+          style={{
+            background:
+              "linear-gradient(90deg, rgba(79,70,229,0.08), rgba(124,58,237,0.05))",
+            borderBottomColor: "rgba(79,70,229,0.15)",
+          }}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-3">
-            <Bell className="h-4 w-4 flex-shrink-0 text-primary" />
-            <p className="text-sm flex-1 text-white font-medium">
+            <Bell
+              className="h-4 w-4 flex-shrink-0"
+              style={{ color: "#4f46e5" }}
+            />
+            <p
+              className="text-sm flex-1 font-semibold"
+              style={{ color: "#3730a3" }}
+            >
               {bannerText}
             </p>
             <button
               type="button"
               data-ocid="home.dismiss_banner.button"
               onClick={() => setBannerDismissed(true)}
-              className="hover:opacity-70 transition-opacity text-white/60"
+              className="hover:opacity-70 transition-opacity"
+              style={{ color: "#6b7280" }}
               aria-label="Dismiss"
             >
               <X className="h-4 w-4" />
@@ -354,22 +369,29 @@ export default function HomePage({
         {/* Welcome + Search */}
         <div className="mb-6 flex flex-col sm:flex-row sm:items-end gap-4">
           <div className="flex-1">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white font-display">
+            <h1
+              className="text-2xl sm:text-3xl font-bold font-display"
+              style={{ color: "#1e1b4b" }}
+            >
               Welcome, {username}!
             </h1>
-            <p className="text-blue-300/80 text-sm mt-1 font-medium">
+            <p
+              className="text-sm mt-1 font-medium"
+              style={{ color: "#6366f1" }}
+            >
               Student Portal — Academic Year 2025–2026
             </p>
           </div>
           <div className="relative sm:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <input
               type="text"
               data-ocid="home.search_input"
               placeholder="Search subjects, notifications…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm bg-white/8 border border-white/20 text-white placeholder-white/40 focus:border-primary/60 focus:outline-none transition-all input-glow"
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm bg-white border-2 border-slate-200 placeholder-slate-400 focus:border-indigo-400 focus:outline-none transition-all"
+              style={{ color: "#1e1b4b" }}
             />
           </div>
         </div>
@@ -379,16 +401,19 @@ export default function HomePage({
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 glass-card rounded-2xl p-4 shadow-glass"
+            className="mb-6 rounded-2xl p-4 bg-white shadow-card border border-slate-100"
           >
             {!hasResults && (
-              <p className="text-sm text-white/60">
+              <p className="text-sm text-slate-500">
                 No results for "{searchQuery}"
               </p>
             )}
             {searchResults.pages.length > 0 && (
               <div className="mb-3">
-                <p className="text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">
+                <p
+                  className="text-xs font-bold uppercase tracking-widest mb-2"
+                  style={{ color: "#4f46e5" }}
+                >
                   Pages
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -400,12 +425,15 @@ export default function HomePage({
                         onNavigate(r.page);
                         setSearchQuery("");
                       }}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/8 hover:bg-primary/20 border border-white/15 hover:border-primary/40 transition-all text-left"
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 transition-all text-left"
                     >
-                      <span className="text-sm font-semibold text-white">
+                      <span
+                        className="text-sm font-semibold"
+                        style={{ color: "#1e1b4b" }}
+                      >
                         {r.label}
                       </span>
-                      <span className="text-xs text-white/50 hidden sm:block">
+                      <span className="text-xs text-slate-400 hidden sm:block">
                         — {r.desc}
                       </span>
                     </button>
@@ -415,12 +443,19 @@ export default function HomePage({
             )}
             {searchResults.notifs.length > 0 && (
               <div>
-                <p className="text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">
+                <p
+                  className="text-xs font-bold uppercase tracking-widest mb-2"
+                  style={{ color: "#4f46e5" }}
+                >
                   Notifications
                 </p>
                 <div className="space-y-1.5">
                   {searchResults.notifs.map((n) => (
-                    <p key={n} className="text-sm text-white px-1">
+                    <p
+                      key={n}
+                      className="text-sm px-1"
+                      style={{ color: "#374151" }}
+                    >
                       {n}
                     </p>
                   ))}
@@ -446,7 +481,7 @@ export default function HomePage({
                   initial={{ opacity: 0, y: -8, height: 0 }}
                   animate={{ opacity: 1, y: 0, height: "auto" }}
                   exit={{ opacity: 0, y: -8, height: 0 }}
-                  className="mb-3 flex items-center gap-3 px-4 py-2.5 rounded-xl bg-red-500/20 border border-red-500/40 text-red-200"
+                  className="mb-3 flex items-center gap-3 px-4 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700"
                 >
                   <Bell className="h-4 w-4 flex-shrink-0" />
                   <span className="text-sm flex-1 font-semibold">
@@ -465,7 +500,7 @@ export default function HomePage({
 
             {/* Filter + Sort toolbar */}
             <div className="flex flex-wrap items-center gap-3 mb-4">
-              <div className="flex rounded-xl overflow-hidden border border-white/15 bg-white/5">
+              <div className="flex rounded-xl overflow-hidden border border-slate-200 bg-white shadow-xs">
                 {(["all", "completed"] as const).map((tab) => (
                   <button
                     key={tab}
@@ -474,8 +509,8 @@ export default function HomePage({
                     onClick={() => setFilterTab(tab)}
                     className={`px-3 py-1.5 text-xs font-bold capitalize transition-all ${
                       filterTab === tab
-                        ? "bg-primary text-primary-foreground"
-                        : "text-white/70 hover:text-white"
+                        ? "bg-indigo-600 text-white"
+                        : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
                     {tab}
@@ -488,7 +523,7 @@ export default function HomePage({
                   type="button"
                   data-ocid="subjects.sort.button"
                   onClick={() => setSortOpen((v) => !v)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/15 bg-white/5 text-xs font-semibold text-white/70 hover:text-white transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all shadow-xs"
                 >
                   Sort: {sortBy === "name" ? "By Name" : "By Exam Date"}
                   <ChevronDown className="h-3 w-3" />
@@ -499,7 +534,7 @@ export default function HomePage({
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 4 }}
-                      className="absolute top-full left-0 mt-1 z-20 bg-card border border-border rounded-xl shadow-lg overflow-hidden min-w-[150px]"
+                      className="absolute top-full left-0 mt-1 z-20 bg-white border border-slate-100 rounded-xl shadow-lg overflow-hidden min-w-[150px]"
                     >
                       {(["name", "examDate"] as const).map((opt) => (
                         <button
@@ -511,8 +546,8 @@ export default function HomePage({
                           }}
                           className={`w-full text-left px-4 py-2 text-sm transition-colors font-medium ${
                             sortBy === opt
-                              ? "bg-primary/20 text-primary"
-                              : "hover:bg-white/5 text-white"
+                              ? "bg-indigo-50 text-indigo-600"
+                              : "hover:bg-slate-50 text-slate-700"
                           }`}
                         >
                           {opt === "name" ? "By Name" : "By Exam Date"}
@@ -523,7 +558,7 @@ export default function HomePage({
                 </AnimatePresence>
               </div>
 
-              <span className="text-xs text-white/50 hidden sm:block font-medium">
+              <span className="text-xs text-slate-400 hidden sm:block font-medium">
                 ← View Details&nbsp;&nbsp;|&nbsp;&nbsp;Mark Complete →
               </span>
             </div>
@@ -546,7 +581,7 @@ export default function HomePage({
                         transition={{ delay: i * 0.08 }}
                         onTouchStart={(e) => handleTouchStart(s.key, e)}
                         onTouchEnd={(e) => handleTouchEnd(s.key, s.page, e)}
-                        className={`relative overflow-hidden rounded-2xl border backdrop-blur-md bg-white/10 ${s.accent} shadow-card hover:shadow-xl ${s.glowColor} hover:-translate-y-1 transition-all duration-300 group`}
+                        className={`relative overflow-hidden rounded-2xl border-2 bg-white ${s.accent} shadow-card hover:shadow-card-hover ${s.glowColor} hover:-translate-y-1 transition-all duration-300 group card-lift`}
                       >
                         {/* Gradient overlay */}
                         <div
@@ -566,12 +601,18 @@ export default function HomePage({
                                 <div
                                   className={`w-2.5 h-2.5 rounded-full ${s.dotColor}`}
                                 />
-                                <h3 className="font-extrabold text-lg text-white leading-tight">
+                                <h3
+                                  className="font-extrabold text-lg leading-tight"
+                                  style={{ color: "#1e1b4b" }}
+                                >
                                   {s.key}
                                 </h3>
                               </div>
                               {data?.teacherName && (
-                                <p className="text-xs text-white/60 truncate mt-0.5 font-medium">
+                                <p
+                                  className="text-xs truncate mt-0.5 font-medium"
+                                  style={{ color: "#6b7280" }}
+                                >
                                   {data.teacherName}
                                 </p>
                               )}
@@ -581,16 +622,28 @@ export default function HomePage({
 
                           {/* Info rows */}
                           <div className="space-y-2 mb-4">
-                            <p className="text-sm text-white/70 flex items-center gap-1.5">
+                            <p
+                              className="text-sm flex items-center gap-1.5"
+                              style={{ color: "#6b7280" }}
+                            >
                               📅{" "}
-                              <span className="text-white font-semibold">
+                              <span
+                                className="font-semibold"
+                                style={{ color: "#1e1b4b" }}
+                              >
                                 Exam: {data?.examDate || "TBA"}
                               </span>
                             </p>
                             {s.hasPractical && (
-                              <p className="text-sm text-white/70 flex items-center gap-1.5">
+                              <p
+                                className="text-sm flex items-center gap-1.5"
+                                style={{ color: "#6b7280" }}
+                              >
                                 🧪{" "}
-                                <span className="text-white font-semibold">
+                                <span
+                                  className="font-semibold"
+                                  style={{ color: "#1e1b4b" }}
+                                >
                                   Practical: {data?.practicalDate || "TBA"}
                                 </span>
                               </p>
@@ -605,7 +658,8 @@ export default function HomePage({
                               variant="ghost"
                               data-ocid={`subjects.item.${i + 1}.button`}
                               onClick={() => onNavigate(s.page)}
-                              className="h-7 text-xs px-2.5 border border-white/20 hover:bg-white/15 text-white/90 hover:text-white rounded-lg transition-all hover:scale-105 font-semibold"
+                              className="h-7 text-xs px-2.5 border border-indigo-200 hover:bg-indigo-50 rounded-lg transition-all hover:scale-105 font-semibold"
+                              style={{ color: "#4f46e5" }}
                             >
                               View Details{" "}
                               <ChevronRight className="h-3 w-3 ml-1" />
@@ -617,7 +671,7 @@ export default function HomePage({
                                 data-ocid={`subjects.item.${i + 1}.secondary_button`}
                                 onClick={() => markComplete.mutate(s.key)}
                                 disabled={markComplete.isPending}
-                                className="h-6 text-xs px-2 bg-transparent hover:bg-green-500/20 text-green-300 hover:text-green-200 border border-green-500/30 hover:border-green-500/60 rounded-lg transition-all hover:scale-105 font-semibold"
+                                className="h-6 text-xs px-2 bg-transparent hover:bg-emerald-50 text-emerald-600 hover:text-emerald-700 border border-emerald-200 hover:border-emerald-400 rounded-lg transition-all hover:scale-105 font-semibold"
                               >
                                 <CheckCircle2 className="h-3 w-3 mr-1" /> Mark
                                 Complete
@@ -635,15 +689,16 @@ export default function HomePage({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   data-ocid="subjects.empty_state"
-                  className="col-span-3 text-center py-12 glass-card rounded-2xl border border-white/10"
+                  className="col-span-3 text-center py-12 bg-white rounded-2xl border border-slate-100 shadow-xs"
                 >
-                  <p className="text-white/60 font-medium">
+                  <p className="text-slate-500 font-medium">
                     No subjects match the current filter.
                   </p>
                   <button
                     type="button"
                     onClick={() => setFilterTab("all")}
-                    className="mt-2 text-sm text-primary hover:underline"
+                    className="mt-2 text-sm hover:underline"
+                    style={{ color: "#4f46e5" }}
                   >
                     Show all subjects
                   </button>
@@ -657,54 +712,85 @@ export default function HomePage({
                 type="button"
                 data-ocid="home.about.button"
                 onClick={() => onNavigate("about")}
-                className="flex items-center gap-3 p-4 glass-card rounded-xl border-border/30 hover:border-primary/40 shadow-xs hover:shadow-glow-sm transition-all text-left"
+                className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-100 hover:border-indigo-200 shadow-xs hover:shadow-card transition-all text-left"
               >
-                <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center">
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center"
+                  style={{ background: "rgba(79,70,229,0.08)" }}
+                >
                   <Info className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <div className="font-bold text-sm text-white">
+                  <div
+                    className="font-bold text-sm"
+                    style={{ color: "#1e1b4b" }}
+                  >
                     About College
                   </div>
-                  <div className="text-xs text-white/55 font-medium">
+                  <div
+                    className="text-xs font-medium"
+                    style={{ color: "#9ca3af" }}
+                  >
                     Mission &amp; history
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-white/40 ml-auto" />
+                <ChevronRight className="h-4 w-4 ml-auto text-slate-300" />
               </button>
               <button
                 type="button"
                 data-ocid="home.contact.button"
                 onClick={() => onNavigate("contact")}
-                className="flex items-center gap-3 p-4 glass-card rounded-xl border-border/30 hover:border-primary/40 shadow-xs hover:shadow-glow-sm transition-all text-left"
+                className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-100 hover:border-indigo-200 shadow-xs hover:shadow-card transition-all text-left"
               >
-                <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center">
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center"
+                  style={{ background: "rgba(79,70,229,0.08)" }}
+                >
                   <Phone className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <div className="font-bold text-sm text-white">Contact</div>
-                  <div className="text-xs text-white/55 font-medium">
+                  <div
+                    className="font-bold text-sm"
+                    style={{ color: "#1e1b4b" }}
+                  >
+                    Contact
+                  </div>
+                  <div
+                    className="text-xs font-medium"
+                    style={{ color: "#9ca3af" }}
+                  >
                     Get in touch
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-white/40 ml-auto" />
+                <ChevronRight className="h-4 w-4 ml-auto text-slate-300" />
               </button>
               <button
                 type="button"
                 data-ocid="home.calendar.button"
                 onClick={() => onNavigate("calendar")}
-                className="flex items-center gap-3 p-4 glass-card rounded-xl border-border/30 hover:border-primary/40 shadow-xs hover:shadow-glow-sm transition-all text-left"
+                className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-100 hover:border-indigo-200 shadow-xs hover:shadow-card transition-all text-left"
               >
-                <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center">
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center"
+                  style={{ background: "rgba(79,70,229,0.08)" }}
+                >
                   <Calendar className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <div className="font-bold text-sm text-white">Calendar</div>
-                  <div className="text-xs text-white/55 font-medium">
+                  <div
+                    className="font-bold text-sm"
+                    style={{ color: "#1e1b4b" }}
+                  >
+                    Calendar
+                  </div>
+                  <div
+                    className="text-xs font-medium"
+                    style={{ color: "#9ca3af" }}
+                  >
                     Exam schedule
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-white/40 ml-auto" />
+                <ChevronRight className="h-4 w-4 ml-auto text-slate-300" />
               </button>
             </div>
           </div>
@@ -721,7 +807,8 @@ export default function HomePage({
                 <div
                   key={note}
                   data-ocid={`notifications.item.${i + 1}`}
-                  className="p-3 rounded-xl text-sm text-white font-medium border border-white/10 bg-gradient-to-r from-white/8 to-white/4"
+                  className="p-3 rounded-xl text-sm font-medium border border-slate-100 bg-white shadow-xs"
+                  style={{ color: "#374151" }}
                 >
                   {note}
                 </div>
@@ -733,21 +820,27 @@ export default function HomePage({
               <Calendar className="h-5 w-5 text-blue-400 flex-shrink-0" />
               Upcoming Deadlines
             </h2>
-            <div className="rounded-xl border border-white/15 overflow-hidden bg-white/5 backdrop-blur-md">
+            <div className="rounded-xl border border-slate-100 overflow-hidden bg-white shadow-xs">
               {deadlines.map((d, i) => (
                 <div
                   key={d.label}
-                  className={`flex items-center gap-3 px-4 py-3.5 border-l-2 ${d.border} ${
+                  className={`flex items-center gap-3 px-4 py-3.5 border-l-4 ${d.border} ${
                     i !== 0 ? "border-t border-white/10" : ""
-                  } hover:bg-white/5 transition-colors`}
+                  } hover:bg-slate-50 transition-colors`}
                 >
                   <div
                     className={`w-2.5 h-2.5 rounded-full ${d.color} flex-shrink-0`}
                   />
-                  <span className="text-sm text-white font-semibold flex-1 leading-tight">
+                  <span
+                    className="text-sm font-semibold flex-1 leading-tight"
+                    style={{ color: "#1e1b4b" }}
+                  >
                     {d.label}
                   </span>
-                  <span className="text-sm text-blue-300 font-bold whitespace-nowrap">
+                  <span
+                    className="text-sm font-bold whitespace-nowrap"
+                    style={{ color: "#4f46e5" }}
+                  >
                     {d.date}
                   </span>
                 </div>

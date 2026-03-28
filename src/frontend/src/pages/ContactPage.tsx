@@ -75,7 +75,10 @@ export default function ContactPage({
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div
+      className="min-h-screen flex flex-col"
+      style={{ background: "oklch(0.97 0.008 264)" }}
+    >
       <PageHeader
         username={username}
         currentPage="contact"

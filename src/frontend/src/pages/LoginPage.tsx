@@ -1,7 +1,18 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { CheckCircle } from "lucide-react";
-import { AlertCircle, Eye, EyeOff, Loader2, Shield } from "lucide-react";
+import {
+  AlertCircle,
+  AtSign,
+  Eye,
+  EyeOff,
+  Hash,
+  Loader2,
+  Lock,
+  Mail,
+  Shield,
+  User,
+} from "lucide-react";
 import {
   AnimatePresence,
   motion,
@@ -46,7 +57,7 @@ function PasswordStrength({ password }: { password: string }) {
           <div
             key={i}
             className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
-              i <= strength ? strengthColor[strength] : "bg-white/10"
+              i <= strength ? strengthColor[strength] : "bg-slate-200"
             }`}
           />
         ))}
@@ -79,6 +90,7 @@ function GlassInput({
   required,
   "data-ocid": dataOcid,
   rightElement,
+  leftElement,
 }: {
   id: string;
   type: string;
@@ -88,9 +100,18 @@ function GlassInput({
   required?: boolean;
   "data-ocid"?: string;
   rightElement?: React.ReactNode;
+  leftElement?: React.ReactNode;
 }) {
   return (
     <div className="relative">
+      {leftElement && (
+        <div
+          className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+          style={{ color: "#9ca3af" }}
+        >
+          {leftElement}
+        </div>
+      )}
       <input
         id={id}
         type={type}
@@ -99,10 +120,11 @@ function GlassInput({
         onChange={onChange}
         required={required}
         data-ocid={dataOcid}
-        className="w-full px-4 py-3.5 rounded-xl text-sm text-white placeholder-white/30 border transition-all duration-200 outline-none pr-10 input-glow"
+        className={`w-full py-3.5 rounded-xl text-sm placeholder-slate-400 border-2 transition-all duration-200 outline-none input-glow ${leftElement ? "pl-10" : "pl-4"}${rightElement ? " pr-10" : " pr-4"}`}
         style={{
-          background: "rgba(255,255,255,0.05)",
-          borderColor: "rgba(100,140,255,0.2)",
+          color: "#222",
+          background: "rgba(255,255,255,0.98)",
+          borderColor: "rgba(79,70,229,0.2)",
         }}
       />
       {rightElement && (
@@ -207,7 +229,7 @@ function ParticleBackground() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none"
-      style={{ opacity: 0.7, zIndex: 0 }}
+      style={{ opacity: 0.35, zIndex: 0 }}
     />
   );
 }
@@ -220,7 +242,7 @@ function FloatingShapes() {
       size: 80,
       top: "8%",
       left: "5%",
-      color: "rgba(120,160,255,0.22)",
+      color: "rgba(79,70,229,0.3)",
       animClass: "shape-float-1",
       type: "circle",
     },
@@ -229,7 +251,7 @@ function FloatingShapes() {
       size: 60,
       top: "15%",
       right: "8%",
-      color: "rgba(180,120,255,0.2)",
+      color: "rgba(124,58,237,0.25)",
       animClass: "shape-float-2",
       type: "square",
     },
@@ -238,7 +260,7 @@ function FloatingShapes() {
       size: 100,
       top: "55%",
       left: "2%",
-      color: "rgba(100,220,255,0.18)",
+      color: "rgba(59,130,246,0.25)",
       animClass: "shape-float-3",
       type: "square",
     },
@@ -247,7 +269,7 @@ function FloatingShapes() {
       size: 50,
       top: "70%",
       right: "5%",
-      color: "rgba(140,100,255,0.22)",
+      color: "rgba(79,70,229,0.28)",
       animClass: "shape-float-4",
       type: "circle",
     },
@@ -256,7 +278,7 @@ function FloatingShapes() {
       size: 70,
       top: "40%",
       right: "2%",
-      color: "rgba(80,180,255,0.2)",
+      color: "rgba(99,102,241,0.25)",
       animClass: "shape-float-5",
       type: "triangle",
     },
@@ -265,7 +287,7 @@ function FloatingShapes() {
       size: 90,
       top: "80%",
       left: "10%",
-      color: "rgba(200,120,255,0.18)",
+      color: "rgba(139,92,246,0.22)",
       animClass: "shape-float-6",
       type: "triangle",
     },
@@ -274,7 +296,7 @@ function FloatingShapes() {
       size: 45,
       top: "25%",
       left: "15%",
-      color: "rgba(100,240,255,0.2)",
+      color: "rgba(14,165,233,0.25)",
       animClass: "shape-float-7",
       type: "square",
     },
@@ -283,7 +305,7 @@ function FloatingShapes() {
       size: 65,
       top: "90%",
       right: "15%",
-      color: "rgba(160,80,255,0.18)",
+      color: "rgba(124,58,237,0.22)",
       animClass: "shape-float-8",
       type: "circle",
     },
@@ -415,6 +437,8 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [adminMode, setAdminMode] = useState(false);
+  // Banner shown on sign-in tab after successful registration + failed auto-login
+  const [regSuccessMsg, setRegSuccessMsg] = useState("");
 
   // Register state
   const [regFullName, setRegFullName] = useState("");
@@ -491,8 +515,15 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
           onLoginSuccess(role, identifier.trim());
         }, 1200);
       }
-    } catch {
-      setError("Login failed. Please check your connection.");
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      if (errMsg.includes("Request ID:") || errMsg.includes("Reject code:")) {
+        setError(
+          "Server connection error. Please check your internet and try again.",
+        );
+      } else {
+        setError("Login failed. Please check your connection.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -571,20 +602,35 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
           setRegLoading(false);
           return;
         }
+        // Registration succeeded — show banner and attempt auto-login
         setRegSuccess(true);
         setRegLoading(false);
+        const savedUsername = regUsername.trim();
+        const savedPassword = regPassword;
         setTimeout(async () => {
           try {
-            const role = await actor.login(regUsername.trim(), regPassword);
-            if (role === "invalid") {
+            const role = await actor.login(savedUsername, savedPassword);
+            if (role === Role.invalid) {
+              // Auto-login returned invalid — guide user to sign in manually
+              setIdentifier(savedUsername);
+              setLoginTab("username");
               setMode("signin");
               setRegSuccess(false);
+              setRegSuccessMsg(
+                "Account created! Sign in with your credentials below.",
+              );
             } else {
-              onLoginSuccess(role, regUsername.trim());
+              onLoginSuccess(role, savedUsername);
             }
           } catch {
+            // Auto-login threw — guide user to sign in manually
+            setIdentifier(savedUsername);
+            setLoginTab("username");
             setMode("signin");
             setRegSuccess(false);
+            setRegSuccessMsg(
+              "Account created! Sign in with your credentials below.",
+            );
           }
         }, 1500);
         return;
@@ -592,7 +638,42 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
         attempt++;
         setRegRetryCount(attempt);
         if (attempt >= maxAttempts) {
-          const errStr = err instanceof Error ? err.message : String(err);
+          // Extract meaningful message from IC/network errors
+          let errStr = "";
+          if (err instanceof Error) {
+            errStr = err.message;
+            // IC agent errors often nest the real reason in .cause
+            const cause = (err as unknown as { cause?: { message?: string } })
+              .cause;
+            if (cause?.message) errStr = cause.message;
+          } else if (typeof err === "object" && err !== null) {
+            const anyErr = err as Record<string, unknown>;
+            errStr = String(anyErr.message || anyErr.cause || err);
+          } else {
+            errStr = String(err);
+          }
+          // If errStr still has raw ICP "Request ID" content, show friendly message
+          if (
+            errStr.includes("Request ID:") ||
+            errStr.includes("Reject code:")
+          ) {
+            setRegError(
+              "Server connection error. Please check your internet and try again.",
+            );
+            setRegLoading(false);
+            return;
+          }
+          // If still too long, grab the first meaningful sentence after a colon
+          if (errStr.length >= 200) {
+            const colonIdx = errStr.indexOf(":");
+            if (colonIdx > 0) {
+              errStr = errStr.slice(colonIdx + 1, colonIdx + 160).trim();
+            } else {
+              errStr =
+                "Registration failed. Please check your connection and try again.";
+            }
+          }
+
           if (
             errStr.includes("timeout") ||
             errStr.includes("network") ||
@@ -631,7 +712,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
         className="fixed inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 70% 60% at 20% 30%, oklch(0.35 0.18 255 / 0.18) 0%, transparent 70%), radial-gradient(ellipse 60% 50% at 80% 70%, oklch(0.3 0.2 290 / 0.14) 0%, transparent 70%), radial-gradient(ellipse 50% 40% at 50% 90%, oklch(0.25 0.15 220 / 0.1) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 60% at 20% 30%, rgba(99,102,241,0.18) 0%, transparent 70%), radial-gradient(ellipse 60% 50% at 80% 70%, rgba(124,58,237,0.14) 0%, transparent 70%), radial-gradient(ellipse 50% 40% at 50% 90%, rgba(59,130,246,0.1) 0%, transparent 70%)",
           animation: "pulse-orbs 8s ease-in-out infinite alternate",
           zIndex: 0,
         }}
@@ -680,7 +761,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
             </h1>
             <p
               className="text-xs tracking-[0.25em] mt-1.5"
-              style={{ color: "rgba(255,255,255,0.45)" }}
+              style={{ color: "#6b7280" }}
             >
               COLLEGE STUDENT PORTAL
             </p>
@@ -733,7 +814,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                           boxShadow:
                             "0 0 18px rgba(99,102,241,0.55), 0 2px 8px rgba(0,0,0,0.3)",
                         }
-                      : { color: "rgba(255,255,255,0.6)" }
+                      : { color: "#6b7280" }
                   }
                 >
                   Sign In
@@ -755,7 +836,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                           boxShadow:
                             "0 0 18px rgba(99,102,241,0.55), 0 2px 8px rgba(0,0,0,0.3)",
                         }
-                      : { color: "rgba(255,255,255,0.6)" }
+                      : { color: "#6b7280" }
                   }
                 >
                   Register
@@ -782,10 +863,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                     >
                       {adminMode ? "Admin Login" : "Student Login"}
                     </h2>
-                    <p
-                      className="text-sm mb-5"
-                      style={{ color: "rgba(255,255,255,0.45)" }}
-                    >
+                    <p className="text-sm mb-5" style={{ color: "#6b7280" }}>
                       {adminMode
                         ? "Administrator credentials required"
                         : "Access your academic portal"}
@@ -794,7 +872,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                     {!adminMode && (
                       <div
                         className="flex gap-1 mb-5 rounded-xl p-1"
-                        style={{ background: "rgba(255,255,255,0.04)" }}
+                        style={{ background: "rgba(79,70,229,0.04)" }}
                       >
                         {loginTabConfig.map((t) => (
                           <button
@@ -810,11 +888,11 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                             style={
                               loginTab === t.key
                                 ? {
-                                    background: "rgba(99,102,241,0.25)",
-                                    color: "#a5b4fc",
-                                    border: "1px solid rgba(99,102,241,0.4)",
+                                    background: "rgba(79,70,229,0.1)",
+                                    color: "#4f46e5",
+                                    border: "1px solid rgba(79,70,229,0.25)",
                                   }
-                                : { color: "rgba(255,255,255,0.55)" }
+                                : { color: "#9ca3af" }
                             }
                           >
                             {t.label}
@@ -828,10 +906,23 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         data-ocid="login.error_state"
-                        className="flex items-center gap-2 text-red-300 bg-red-500/10 border border-red-500/20 rounded-xl p-3 mb-4 text-sm"
+                        className="flex items-center gap-2 text-red-700 bg-red-50 border border-red-300 rounded-xl p-3 mb-4 text-sm"
                       >
                         <AlertCircle className="h-4 w-4 flex-shrink-0" />
                         {error}
+                      </motion.div>
+                    )}
+
+                    {/* Post-registration success guidance banner */}
+                    {regSuccessMsg && !error && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        data-ocid="login.reg_success.success_state"
+                        className="flex items-center gap-2 text-emerald-700 bg-emerald-50 border border-emerald-300 rounded-xl p-3 mb-4 text-sm"
+                      >
+                        <CheckCircle className="h-4 w-4 flex-shrink-0" />
+                        {regSuccessMsg}
                       </motion.div>
                     )}
 
@@ -840,7 +931,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         data-ocid="login.success_state"
-                        className="flex items-center gap-2 text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 mb-4 text-sm"
+                        className="flex items-center gap-2 text-emerald-700 bg-emerald-50 border border-emerald-300 rounded-xl p-3 mb-4 text-sm"
                       >
                         <CheckCircle className="h-4 w-4 flex-shrink-0" />
                         Login successful! Redirecting...
@@ -851,7 +942,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                       <div className="space-y-1.5">
                         <Label
                           className="text-xs font-semibold uppercase tracking-widest"
-                          style={{ color: "rgba(255,255,255,0.65)" }}
+                          style={{ color: "#374151" }}
                         >
                           {adminMode
                             ? "Username"
@@ -868,7 +959,10 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                                   ?.placeholder ?? "")
                           }
                           value={identifier}
-                          onChange={(e) => setIdentifier(e.target.value)}
+                          onChange={(e) => {
+                            setIdentifier(e.target.value);
+                            if (regSuccessMsg) setRegSuccessMsg("");
+                          }}
                           required
                           data-ocid="login.input"
                         />
@@ -877,7 +971,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                       <div className="space-y-1.5">
                         <Label
                           className="text-xs font-semibold uppercase tracking-widest"
-                          style={{ color: "rgba(255,255,255,0.65)" }}
+                          style={{ color: "#374151" }}
                         >
                           Password
                         </Label>
@@ -893,7 +987,8 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                             <button
                               type="button"
                               onClick={() => setShowPassword((v) => !v)}
-                              className="text-white/30 hover:text-white/60 transition-colors"
+                              className="transition-colors"
+                              style={{ color: "#9ca3af" }}
                               aria-label={
                                 showPassword ? "Hide password" : "Show password"
                               }
@@ -920,7 +1015,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                           <Label
                             htmlFor="remember"
                             className="text-sm cursor-pointer"
-                            style={{ color: "rgba(255,255,255,0.65)" }}
+                            style={{ color: "#374151" }}
                           >
                             Remember me
                           </Label>
@@ -939,7 +1034,12 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
-                          className="text-xs text-white/50 bg-white/5 rounded-xl p-3 border border-white/10"
+                          className="text-xs rounded-xl p-3 border"
+                          style={{
+                            color: "#6b7280",
+                            background: "rgba(79,70,229,0.05)",
+                            borderColor: "rgba(79,70,229,0.15)",
+                          }}
                         >
                           🔐 Contact your college administrator to reset your
                           password. Email:{" "}
@@ -973,7 +1073,10 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                       </button>
                     </form>
 
-                    <div className="mt-5 pt-4 border-t border-white/8 text-center">
+                    <div
+                      className="mt-5 pt-4 border-t text-center"
+                      style={{ borderColor: "rgba(79,70,229,0.1)" }}
+                    >
                       <button
                         type="button"
                         data-ocid="login.admin_mode.toggle"
@@ -983,7 +1086,8 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                           setIdentifier("");
                           setLoginTab("username");
                         }}
-                        className="text-xs text-white/30 hover:text-white/60 transition-colors"
+                        className="text-xs transition-colors"
+                        style={{ color: "#9ca3af" }}
                       >
                         {adminMode
                           ? "← Back to Student Login"
@@ -1010,10 +1114,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                     >
                       Create Account
                     </h2>
-                    <p
-                      className="text-sm mb-5"
-                      style={{ color: "rgba(255,255,255,0.45)" }}
-                    >
+                    <p className="text-sm mb-6" style={{ color: "#6b7280" }}>
                       Register as a new student
                     </p>
 
@@ -1022,12 +1123,12 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         data-ocid="register.error_state"
-                        className="flex items-center gap-2 text-red-300 bg-red-500/10 border border-red-500/20 rounded-xl p-3 mb-4 text-sm"
+                        className="flex items-center gap-2 text-red-700 bg-red-50 border border-red-300 rounded-xl p-3 mb-4 text-sm"
                       >
                         <AlertCircle className="h-4 w-4 flex-shrink-0" />
                         <span>{regError}</span>
                         {regRetryCount > 0 && (
-                          <span className="ml-auto text-white/30 text-xs">
+                          <span className="ml-auto text-gray-400 text-xs">
                             Retry {regRetryCount}/2
                           </span>
                         )}
@@ -1039,7 +1140,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         data-ocid="register.success_state"
-                        className="flex items-center gap-2 text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 mb-4 text-sm"
+                        className="flex items-center gap-2 text-emerald-700 bg-emerald-50 border border-emerald-300 rounded-xl p-3 mb-4 text-sm"
                       >
                         <CheckCircle className="h-4 w-4 flex-shrink-0" />
                         Registration successful! Redirecting to your
@@ -1047,11 +1148,11 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                       </motion.div>
                     )}
 
-                    <form onSubmit={handleRegister} className="space-y-3.5">
+                    <form onSubmit={handleRegister} className="space-y-4">
                       <div className="space-y-1.5">
                         <Label
                           className="text-xs font-semibold uppercase tracking-widest"
-                          style={{ color: "rgba(255,255,255,0.65)" }}
+                          style={{ color: "#374151" }}
                         >
                           Full Name
                         </Label>
@@ -1063,13 +1164,14 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                           onChange={(e) => setRegFullName(e.target.value)}
                           required
                           data-ocid="register.fullname.input"
+                          leftElement={<User className="h-4 w-4" />}
                         />
                       </div>
 
                       <div className="space-y-1.5">
                         <Label
                           className="text-xs font-semibold uppercase tracking-widest"
-                          style={{ color: "rgba(255,255,255,0.65)" }}
+                          style={{ color: "#374151" }}
                         >
                           Scholar Number
                         </Label>
@@ -1081,13 +1183,14 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                           onChange={(e) => setRegScholar(e.target.value)}
                           required
                           data-ocid="register.scholar.input"
+                          leftElement={<Hash className="h-4 w-4" />}
                         />
                       </div>
 
                       <div className="space-y-1.5">
                         <Label
                           className="text-xs font-semibold uppercase tracking-widest"
-                          style={{ color: "rgba(255,255,255,0.65)" }}
+                          style={{ color: "#374151" }}
                         >
                           Username
                         </Label>
@@ -1099,18 +1202,19 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                           onChange={(e) => setRegUsername(e.target.value)}
                           required
                           data-ocid="register.input"
+                          leftElement={<AtSign className="h-4 w-4" />}
                         />
                       </div>
 
                       <div className="space-y-1.5">
                         <Label
                           className="text-xs font-semibold uppercase tracking-widest"
-                          style={{ color: "rgba(255,255,255,0.65)" }}
+                          style={{ color: "#374151" }}
                         >
                           Email{" "}
                           <span
                             className="normal-case font-normal"
-                            style={{ color: "rgba(255,255,255,0.3)" }}
+                            style={{ color: "#9ca3af" }}
                           >
                             (optional)
                           </span>
@@ -1122,13 +1226,14 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                           value={regEmail}
                           onChange={(e) => setRegEmail(e.target.value)}
                           data-ocid="register.email.input"
+                          leftElement={<Mail className="h-4 w-4" />}
                         />
                       </div>
 
                       <div className="space-y-1.5">
                         <Label
                           className="text-xs font-semibold uppercase tracking-widest"
-                          style={{ color: "rgba(255,255,255,0.65)" }}
+                          style={{ color: "#374151" }}
                         >
                           Password
                         </Label>
@@ -1140,11 +1245,13 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                           onChange={(e) => setRegPassword(e.target.value)}
                           required
                           data-ocid="register.password.input"
+                          leftElement={<Lock className="h-4 w-4" />}
                           rightElement={
                             <button
                               type="button"
                               onClick={() => setShowRegPassword((v) => !v)}
-                              className="text-white/30 hover:text-white/60 transition-colors"
+                              className="transition-colors"
+                              style={{ color: "#9ca3af" }}
                               aria-label={
                                 showRegPassword
                                   ? "Hide password"
@@ -1165,7 +1272,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                       <div className="space-y-1.5">
                         <Label
                           className="text-xs font-semibold uppercase tracking-widest"
-                          style={{ color: "rgba(255,255,255,0.65)" }}
+                          style={{ color: "#374151" }}
                         >
                           Confirm Password
                         </Label>
@@ -1177,16 +1284,17 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                           onChange={(e) => setRegConfirm(e.target.value)}
                           required
                           data-ocid="register.confirm.input"
+                          leftElement={<Lock className="h-4 w-4" />}
                         />
                         {regConfirm && regPassword !== regConfirm && (
-                          <p className="text-xs text-red-400 mt-1">
+                          <p className="text-xs text-red-500 mt-1">
                             Passwords do not match
                           </p>
                         )}
                         {regConfirm &&
                           regPassword === regConfirm &&
                           regConfirm.length > 0 && (
-                            <p className="text-xs text-emerald-400 mt-1">
+                            <p className="text-xs text-emerald-600 mt-1">
                               ✓ Passwords match
                             </p>
                           )}
@@ -1218,14 +1326,16 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="text-center text-xs text-white/20 mt-6 pb-6"
+            className="text-center text-xs mt-6 pb-6"
+            style={{ color: "#9ca3af" }}
           >
             © {new Date().getFullYear()} Academia University. Built with ♥ using{" "}
             <a
               href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:text-white/40 transition-colors"
+              className="underline hover:opacity-70 transition-colors"
+              style={{ color: "#4f46e5" }}
             >
               caffeine.ai
             </a>

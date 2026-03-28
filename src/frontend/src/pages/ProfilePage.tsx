@@ -45,15 +45,19 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="glass-card rounded-xl p-4 flex items-center gap-3">
+    <div className="rounded-xl p-4 flex items-center gap-3 bg-white border border-slate-100 shadow-xs">
       <div
         className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}
       >
         <Icon className="h-5 w-5" />
       </div>
       <div>
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="text-sm font-bold text-foreground">{value}</p>
+        <p className="text-xs" style={{ color: "#6b7280" }}>
+          {label}
+        </p>
+        <p className="text-sm font-bold" style={{ color: "#1e1b4b" }}>
+          {value}
+        </p>
       </div>
     </div>
   );
@@ -96,25 +100,28 @@ export default function ProfilePage({
     {
       name: "Physics",
       icon: BookOpen,
-      color: "text-blue-400",
+      color: "text-indigo-600",
       exam: "25 Mar 2026",
     },
     {
       name: "Chemistry",
       icon: FlaskConical,
-      color: "text-emerald-400",
+      color: "text-emerald-600",
       exam: "27 Mar 2026",
     },
     {
       name: "Mathematics",
       icon: Calculator,
-      color: "text-orange-400",
+      color: "text-orange-600",
       exam: "29 Mar 2026",
     },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div
+      className="min-h-screen flex flex-col"
+      style={{ background: "oklch(0.97 0.008 264)" }}
+    >
       <PageHeader
         username={username}
         currentPage="profile"
@@ -137,7 +144,7 @@ export default function ProfilePage({
               aria-hidden="true"
               style={{
                 background:
-                  "radial-gradient(ellipse at 50% -20%, oklch(0.60 0.20 255 / 0.15) 0%, transparent 60%)",
+                  "radial-gradient(ellipse at 50% -20%, rgba(79,70,229,0.12) 0%, transparent 60%)",
               }}
             />
 
@@ -151,13 +158,12 @@ export default function ProfilePage({
               <div
                 className="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold text-white animate-pulse-glow"
                 style={{
-                  background:
-                    "linear-gradient(135deg, oklch(0.60 0.20 255), oklch(0.55 0.18 230))",
+                  background: "linear-gradient(135deg, #4f46e5, #7c3aed)",
                 }}
               >
                 {initials}
               </div>
-              <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-emerald-500 border-2 border-background flex items-center justify-center">
+              <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center">
                 <Star className="h-3 w-3 text-white" />
               </div>
             </motion.div>
@@ -170,10 +176,24 @@ export default function ProfilePage({
             </p>
 
             <div className="flex items-center justify-center gap-2 mt-3">
-              <Badge className="bg-primary/20 text-primary border-primary/30 text-xs">
+              <Badge
+                className="text-xs font-semibold"
+                style={{
+                  background: "rgba(79,70,229,0.1)",
+                  color: "#4f46e5",
+                  border: "1px solid rgba(79,70,229,0.2)",
+                }}
+              >
                 Student
               </Badge>
-              <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-xs">
+              <Badge
+                className="text-xs font-semibold"
+                style={{
+                  background: "rgba(16,185,129,0.1)",
+                  color: "#059669",
+                  border: "1px solid rgba(16,185,129,0.2)",
+                }}
+              >
                 Active
               </Badge>
             </div>
@@ -201,17 +221,18 @@ export default function ProfilePage({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + i * 0.05 }}
-                  className="flex items-start gap-3 p-3 rounded-xl bg-white/4"
+                  className="flex items-start gap-3 p-3 rounded-xl"
+                  style={{ background: "rgba(79,70,229,0.04)" }}
                 >
                   <detail.icon className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs" style={{ color: "#6b7280" }}>
                       {detail.label}
                     </p>
                     <p
                       className={`text-sm font-semibold ${
                         detail.label === "Account Status"
-                          ? "text-emerald-400"
+                          ? "text-emerald-600"
                           : "text-foreground"
                       }`}
                     >
@@ -229,19 +250,19 @@ export default function ProfilePage({
               icon={BookOpen}
               label="Subjects"
               value="3 Active"
-              color="bg-blue-500/20 text-blue-400"
+              color="bg-indigo-50 text-indigo-600"
             />
             <StatCard
               icon={CalendarDays}
               label="Next Exam"
               value="25 Mar"
-              color="bg-orange-500/20 text-orange-400"
+              color="bg-orange-50 text-orange-600"
             />
             <StatCard
               icon={Star}
               label="Status"
               value="On Track"
-              color="bg-emerald-500/20 text-emerald-400"
+              color="bg-emerald-50 text-emerald-600"
             />
           </div>
 
@@ -260,18 +281,22 @@ export default function ProfilePage({
                   transition={{ delay: 0.2 + i * 0.08 }}
                   data-ocid={`profile.item.${i + 1}`}
                   onClick={() => onNavigate(s.name.toLowerCase() as Page)}
-                  className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-white/4 hover:bg-white/8 transition-all text-left group"
+                  className="w-full flex items-center gap-3 p-3.5 rounded-xl hover:bg-indigo-50 transition-all text-left group"
+                  style={{ background: "rgba(79,70,229,0.03)" }}
                 >
                   <div
-                    className={`w-9 h-9 rounded-lg flex items-center justify-center bg-white/8 ${s.color}`}
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center bg-slate-50 ${s.color}`}
                   >
                     <s.icon className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-foreground">
+                    <p
+                      className="text-sm font-semibold"
+                      style={{ color: "#1e1b4b" }}
+                    >
                       {s.name}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs" style={{ color: "#6b7280" }}>
                       Exam: {s.exam}
                     </p>
                   </div>

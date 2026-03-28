@@ -32,44 +32,44 @@ const MARCH_EVENTS: EventType[] = [
   {
     day: 24,
     label: "Physics Assignment Due",
-    color: "text-red-300",
-    bg: "bg-red-500/20",
-    border: "border-red-500/40",
+    color: "text-red-600",
+    bg: "bg-red-50",
+    border: "border-red-200",
   },
   {
     day: 25,
     label: "Physics Exam",
-    color: "text-blue-300",
-    bg: "bg-blue-500/20",
-    border: "border-blue-500/40",
+    color: "text-indigo-600",
+    bg: "bg-indigo-50",
+    border: "border-indigo-200",
   },
   {
     day: 27,
     label: "Chemistry Exam",
-    color: "text-emerald-300",
-    bg: "bg-emerald-500/20",
-    border: "border-emerald-500/40",
+    color: "text-emerald-700",
+    bg: "bg-emerald-50",
+    border: "border-emerald-200",
   },
   {
     day: 28,
     label: "Physics Practical",
-    color: "text-sky-300",
-    bg: "bg-sky-500/20",
-    border: "border-sky-500/40",
+    color: "text-sky-700",
+    bg: "bg-sky-50",
+    border: "border-sky-200",
   },
   {
     day: 29,
     label: "Math Exam",
-    color: "text-orange-300",
-    bg: "bg-orange-500/20",
-    border: "border-orange-500/40",
+    color: "text-orange-700",
+    bg: "bg-orange-50",
+    border: "border-orange-200",
   },
   {
     day: 30,
     label: "Chemistry Practical",
-    color: "text-teal-300",
-    bg: "bg-teal-500/20",
-    border: "border-teal-500/40",
+    color: "text-teal-700",
+    bg: "bg-teal-50",
+    border: "border-teal-200",
   },
 ];
 
@@ -77,23 +77,23 @@ const APRIL_EVENTS: EventType[] = [
   {
     day: 1,
     label: "Holiday — No Classes",
-    color: "text-slate-300",
-    bg: "bg-slate-500/20",
-    border: "border-slate-500/40",
+    color: "text-slate-600",
+    bg: "bg-slate-100",
+    border: "border-slate-300",
   },
 ];
 
 const DOT_COLORS: Record<number, string> = {
-  24: "bg-red-400",
-  25: "bg-blue-400",
-  27: "bg-emerald-400",
-  28: "bg-sky-400",
-  29: "bg-orange-400",
-  30: "bg-teal-400",
+  24: "bg-red-500",
+  25: "bg-indigo-500",
+  27: "bg-emerald-500",
+  28: "bg-sky-500",
+  29: "bg-orange-500",
+  30: "bg-teal-500",
 };
 
 const APRIL_DOT_COLORS: Record<number, string> = {
-  1: "bg-slate-400",
+  1: "bg-slate-500",
 };
 
 const MONTHS = [
@@ -139,17 +139,20 @@ export default function CalendarPage({
   const rows = Math.ceil(totalCells / 7);
 
   const legend = [
-    { color: "bg-red-400", label: "Assignment Due" },
-    { color: "bg-blue-400", label: "Physics Exam" },
-    { color: "bg-emerald-400", label: "Chemistry Exam" },
-    { color: "bg-sky-400", label: "Physics Practical" },
-    { color: "bg-orange-400", label: "Math Exam" },
-    { color: "bg-teal-400", label: "Chemistry Practical" },
-    { color: "bg-slate-400", label: "Holiday" },
+    { color: "bg-red-500", label: "Assignment Due" },
+    { color: "bg-indigo-500", label: "Physics Exam" },
+    { color: "bg-emerald-500", label: "Chemistry Exam" },
+    { color: "bg-sky-500", label: "Physics Practical" },
+    { color: "bg-orange-500", label: "Math Exam" },
+    { color: "bg-teal-500", label: "Chemistry Practical" },
+    { color: "bg-slate-500", label: "Holiday" },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div
+      className="min-h-screen flex flex-col"
+      style={{ background: "oklch(0.97 0.008 264)" }}
+    >
       <PageHeader
         username={username}
         currentPage="calendar"
@@ -164,7 +167,7 @@ export default function CalendarPage({
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         >
           <div className="mb-6">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-display bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-2xl sm:text-3xl font-extrabold font-display gradient-heading">
               Academic Calendar
             </h1>
             <p className="text-blue-300/80 text-sm mt-1 font-medium">
@@ -173,7 +176,7 @@ export default function CalendarPage({
           </div>
 
           {/* Calendar card */}
-          <div className="glass-card rounded-2xl shadow-glass p-6">
+          <div className="rounded-2xl p-6 bg-white shadow-card border border-slate-100">
             {/* Month nav */}
             <div className="flex items-center justify-between mb-6">
               <button
@@ -181,12 +184,15 @@ export default function CalendarPage({
                 data-ocid="calendar.pagination_prev"
                 onClick={() => setMonthIdx((i) => Math.max(0, i - 1))}
                 disabled={monthIdx === 0}
-                className="w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:bg-white/10"
+                className="w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:bg-slate-100"
                 aria-label="Previous month"
               >
-                <ChevronLeft className="h-5 w-5 text-white" />
+                <ChevronLeft className="h-5 w-5" style={{ color: "#1e1b4b" }} />
               </button>
-              <h2 className="text-xl font-extrabold text-white">
+              <h2
+                className="text-xl font-extrabold"
+                style={{ color: "#1e1b4b" }}
+              >
                 {monthData.name}
               </h2>
               <button
@@ -196,10 +202,13 @@ export default function CalendarPage({
                   setMonthIdx((i) => Math.min(MONTHS.length - 1, i + 1))
                 }
                 disabled={monthIdx === MONTHS.length - 1}
-                className="w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:bg-white/10"
+                className="w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 hover:bg-slate-100"
                 aria-label="Next month"
               >
-                <ChevronRight className="h-5 w-5 text-white" />
+                <ChevronRight
+                  className="h-5 w-5"
+                  style={{ color: "#1e1b4b" }}
+                />
               </button>
             </div>
 
@@ -242,7 +251,7 @@ export default function CalendarPage({
                       !isValidDay
                         ? "opacity-0 pointer-events-none"
                         : events.length > 0
-                          ? "cursor-pointer hover:bg-white/10 bg-white/5"
+                          ? "cursor-pointer hover:bg-indigo-50 bg-slate-50"
                           : ""
                     } ${isToday ? "ring-2 ring-primary/80 bg-primary/15" : ""}`}
                   >
@@ -250,7 +259,7 @@ export default function CalendarPage({
                       <>
                         <span
                           className={`text-sm font-bold ${
-                            isToday ? "text-primary" : "text-white"
+                            isToday ? "text-white" : "text-slate-800"
                           }`}
                         >
                           {day}
@@ -274,7 +283,7 @@ export default function CalendarPage({
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             className="absolute z-20 bottom-full left-1/2 -translate-x-1/2 mb-2 w-44 pointer-events-none"
                           >
-                            <div className="glass-card-strong rounded-xl p-2.5 shadow-glass">
+                            <div className="rounded-xl p-2.5 bg-white shadow-lg border border-slate-100">
                               {events.map((ev, evIdx) => (
                                 <div
                                   key={ev.label}
@@ -288,7 +297,7 @@ export default function CalendarPage({
                                 </div>
                               ))}
                             </div>
-                            <div className="w-2 h-2 bg-white/10 rotate-45 mx-auto -mt-1" />
+                            <div className="w-2 h-2 bg-white rotate-45 mx-auto -mt-1 border-l border-t border-slate-100" />
                           </motion.div>
                         )}
                       </>
@@ -300,8 +309,8 @@ export default function CalendarPage({
           </div>
 
           {/* Events list */}
-          <div className="mt-6 glass-card rounded-2xl p-5 shadow-glass">
-            <h3 className="text-lg font-extrabold text-white mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+          <div className="mt-6 rounded-2xl p-5 bg-white shadow-card border border-slate-100">
+            <h3 className="text-lg font-extrabold mb-4 gradient-heading">
               📅 {monthData.name} Events
             </h3>
             <div className="space-y-2">
@@ -320,7 +329,10 @@ export default function CalendarPage({
                   <span className={`text-sm font-bold ${ev.color}`}>
                     {monthData.name.split(" ")[0]} {ev.day}
                   </span>
-                  <span className="text-sm text-white font-semibold flex-1">
+                  <span
+                    className="text-sm font-semibold flex-1"
+                    style={{ color: "#1e1b4b" }}
+                  >
                     {ev.label}
                   </span>
                 </motion.div>
@@ -329,15 +341,21 @@ export default function CalendarPage({
           </div>
 
           {/* Legend */}
-          <div className="mt-5 glass-card rounded-2xl p-5 shadow-glass">
-            <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">
+          <div className="mt-5 rounded-2xl p-5 bg-white shadow-card border border-slate-100">
+            <h3
+              className="text-sm font-bold mb-3 uppercase tracking-wider"
+              style={{ color: "#374151" }}
+            >
               Legend
             </h3>
             <div className="flex flex-wrap gap-3">
               {legend.map((item) => (
                 <div key={item.label} className="flex items-center gap-1.5">
                   <div className={`w-2.5 h-2.5 rounded-full ${item.color}`} />
-                  <span className="text-xs text-white/80 font-semibold">
+                  <span
+                    className="text-xs font-semibold"
+                    style={{ color: "#374151" }}
+                  >
                     {item.label}
                   </span>
                 </div>
