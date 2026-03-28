@@ -1,6 +1,6 @@
-import { getApps, initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-
+// Firebase config placeholder — install the 'firebase' package and replace
+// the placeholder values below with your real Firebase project config.
+// Until then, the Firebase subjects feature is disabled.
 export const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_AUTH_DOMAIN",
@@ -10,8 +10,5 @@ export const firebaseConfig = {
   appId: "YOUR_APP_ID",
 };
 
-// Only initialise once (React StrictMode double-mounts)
-const app =
-  getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-
-export const db = getFirestore(app);
+// db is null until firebase is properly installed and configured
+export const db: null = null;

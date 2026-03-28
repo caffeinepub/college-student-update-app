@@ -44,6 +44,16 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
     return raw;
   }
 
+  function isNetworkError(raw: string): boolean {
+    return (
+      raw.includes("Request ID:") ||
+      raw.includes("Reject code:") ||
+      raw.toLowerCase().includes("failed to fetch") ||
+      raw.toLowerCase().includes("networkerror") ||
+      raw.toLowerCase().includes("typeerror")
+    );
+  }
+
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
     if (!siUsername.trim() || !siPassword.trim()) {
@@ -56,15 +66,31 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
     }
     setSiLoading(true);
     setSiError("");
-    try {
+
+    const attemptLogin = async () => {
       const role = await actor.login(siUsername.trim(), siPassword);
       if (role === Role.invalid) {
         setSiError("Invalid username or password.");
       } else {
         onLoginSuccess(role, siUsername.trim());
       }
+    };
+
+    try {
+      await attemptLogin();
     } catch (err: any) {
-      setSiError(cleanError(err?.message || String(err)));
+      const raw = err?.message || String(err);
+      if (isNetworkError(raw)) {
+        setSiError("Connecting to server, please wait...");
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        try {
+          await attemptLogin();
+        } catch (retryErr: any) {
+          setSiError(cleanError(retryErr?.message || String(retryErr)));
+        }
+      } else {
+        setSiError(cleanError(raw));
+      }
     } finally {
       setSiLoading(false);
     }
@@ -105,7 +131,8 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
     }
 
     setRegLoading(true);
-    try {
+
+    const attemptRegister = async () => {
       const result = await actor.register(
         regUsername.trim(),
         regPassword,
@@ -129,8 +156,23 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
         setSiUsername(savedUsername);
         setRegSuccess("");
       }, 1500);
+    };
+
+    try {
+      await attemptRegister();
     } catch (err: any) {
-      setRegError(cleanError(err?.message || String(err)));
+      const raw = err?.message || String(err);
+      if (isNetworkError(raw)) {
+        setRegError("Connecting to server, please wait...");
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        try {
+          await attemptRegister();
+        } catch (retryErr: any) {
+          setRegError(cleanError(retryErr?.message || String(retryErr)));
+        }
+      } else {
+        setRegError(cleanError(raw));
+      }
     } finally {
       setRegLoading(false);
     }
@@ -254,7 +296,17 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
             </div>
 
             {siError && (
-              <p className="text-red-600 text-sm" data-ocid="login.error_state">
+              <p
+                className={`text-sm ${
+                  siError.includes("Connecting")
+                    ? "text-amber-600"
+                    : "text-red-600"
+                }`}
+                data-ocid="login.error_state"
+              >
+                {siError.includes("Connecting") && (
+                  <span className="inline-block w-3 h-3 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mr-2 align-middle" />
+                )}
                 {siError}
               </p>
             )}
@@ -421,9 +473,16 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
             {regError && (
               <p
-                className="text-red-600 text-sm"
+                className={`text-sm ${
+                  regError.includes("Connecting")
+                    ? "text-amber-600"
+                    : "text-red-600"
+                }`}
                 data-ocid="register.error_state"
               >
+                {regError.includes("Connecting") && (
+                  <span className="inline-block w-3 h-3 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mr-2 align-middle" />
+                )}
                 {regError}
               </p>
             )}
