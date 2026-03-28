@@ -207,7 +207,7 @@ function FirebaseSubjectsSection() {
               {/* Subject name */}
               <div className="relative">
                 <h3 className="text-lg font-bold text-foreground leading-tight">
-                  {subject.subjectName}
+                  {subject.subject_name}
                 </h3>
               </div>
 
@@ -216,18 +216,20 @@ function FirebaseSubjectsSection() {
                 <CalendarDays className="h-4 w-4 text-indigo-400 flex-shrink-0" />
                 <span className="text-muted-foreground">Exam:</span>
                 <span className="font-medium text-foreground">
-                  {subject.examDate || "TBA"}
+                  {subject.exam_date || "TBA"}
                 </span>
               </div>
 
               {/* PDF button or no-PDF notice */}
               <div className="relative mt-auto">
-                {subject.assignmentPdf ? (
+                {subject.assignment_pdf ? (
                   <Button
                     data-ocid={`firebase.view_pdf.button.${i + 1}`}
                     size="sm"
                     className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white border-0 shadow-[0_0_14px_rgba(99,102,241,0.4)] hover:shadow-[0_0_20px_rgba(99,102,241,0.6)] transition-all duration-200 text-xs font-semibold"
-                    onClick={() => window.open(subject.assignmentPdf, "_blank")}
+                    onClick={() =>
+                      window.open(subject.assignment_pdf, "_blank")
+                    }
                   >
                     <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
                     View PDF

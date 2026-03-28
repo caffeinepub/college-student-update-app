@@ -1,8 +1,5 @@
-// Firebase config placeholder.
-// When the firebase package is available, replace this stub with the real SDK.
-// For now, db is typed as `unknown` and the real integration is handled
-// via the useFirebaseSubjects hook which gracefully degrades.
-export const db: unknown = null;
+import { getApps, initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 export const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
@@ -12,3 +9,9 @@ export const firebaseConfig = {
   messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
   appId: "YOUR_APP_ID",
 };
+
+// Only initialise once (React StrictMode double-mounts)
+const app =
+  getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+
+export const db = getFirestore(app);
