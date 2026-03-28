@@ -32,8 +32,15 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
   function cleanError(raw: string): string {
     if (!raw) return "Something went wrong. Please try again.";
-    if (raw.includes("Request ID:") || raw.includes("Reject code:"))
-      return "Server connection error. Please check your internet and try again.";
+    if (
+      raw.includes("Request ID:") ||
+      raw.includes("Reject code:") ||
+      raw.toLowerCase().includes("failed to fetch") ||
+      raw.toLowerCase().includes("networkerror") ||
+      raw.toLowerCase().includes("typeerror")
+    ) {
+      return "Unable to connect to server. Please check your internet connection and try again.";
+    }
     return raw;
   }
 
