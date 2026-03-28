@@ -10,6 +10,7 @@ import {
   Loader2,
   Lock,
   Mail,
+  RefreshCw,
   Shield,
   User,
 } from "lucide-react";
@@ -22,6 +23,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { Role } from "../backend";
 import { useActor } from "../hooks/useActor";
+import { useBackendWakeUp } from "../hooks/useBackendWakeUp";
 
 interface LoginPageProps {
   onLoginSuccess: (role: Role, username: string) => void;
@@ -422,8 +424,21 @@ function FloatingShapes() {
   );
 }
 
+function isNetworkError(msg: string): boolean {
+  const lower = msg.toLowerCase();
+  return (
+    msg.includes("Request ID:") ||
+    msg.includes("Reject code:") ||
+    lower.includes("fetch") ||
+    lower.includes("network") ||
+    lower.includes("timeout") ||
+    lower.includes("connection")
+  );
+}
+
 export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
-  const { actor } = useActor();
+  const { actor, isFetching } = useActor();
+  const { isWakingUp, ensureAwake } = useBackendWakeUp();
   const [mode, setMode] = useState<"signin" | "register">("signin");
   const [loginTab, setLoginTab] = useState<LoginTab>("scholar");
   const [loginSuccess, setLoginSuccess] = useState(false);
@@ -437,6 +452,8 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [adminMode, setAdminMode] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [showRetryBtn, setShowRetryBtn] = useState(false);
   // Banner shown on sign-in tab after successful registration + failed auto-login
   const [regSuccessMsg, setRegSuccessMsg] = useState("");
 
@@ -452,6 +469,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const [regError, setRegError] = useState("");
   const [regSuccess, setRegSuccess] = useState(false);
   const [regRetryCount, setRegRetryCount] = useState(0);
+  const [showRegRetryBtn, setShowRegRetryBtn] = useState(false);
 
   // Mouse parallax for card
   const cardRotateX = useMotionValue(0);
@@ -490,49 +508,79 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
     { key: "email", label: "Email", placeholder: "Enter your email" },
   ];
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const attemptSignIn = async (): Promise<void> => {
+    if (!actor) return;
+    let role: Role;
+    if (loginTab === "scholar") {
+      role = await actor.loginByScholarNumber(identifier.trim(), password);
+    } else {
+      role = await actor.login(identifier.trim(), password);
+    }
+    if (role === Role.invalid) {
+      setError("Invalid credentials. Please check and try again.");
+    } else if (adminMode && role !== Role.admin) {
+      setError("Access denied. Admin credentials required.");
+    } else {
+      setLoginSuccess(true);
+      setTimeout(() => {
+        onLoginSuccess(role, identifier.trim());
+      }, 1200);
+    }
+  };
+
+  const handleSignIn = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!actor) {
-      setError("Not connected to backend. Please wait.");
+      setError("Not connected to backend. Please wait and try again.");
       return;
     }
+    // Reset retry state on fresh attempt
+    setRetryCount(0);
+    setShowRetryBtn(false);
     setError("");
     setIsLoading(true);
+    // Wake up the backend canister before the real request
+    await ensureAwake(3, 2000);
+    let handledByRetry = false;
     try {
-      let role: Role;
-      if (loginTab === "scholar") {
-        role = await actor.loginByScholarNumber(identifier.trim(), password);
-      } else {
-        role = await actor.login(identifier.trim(), password);
-      }
-      if (role === Role.invalid) {
-        setError("Invalid credentials. Please check and try again.");
-      } else if (adminMode && role !== Role.admin) {
-        setError("Access denied. Admin credentials required.");
-      } else {
-        setLoginSuccess(true);
-        setTimeout(() => {
-          onLoginSuccess(role, identifier.trim());
-        }, 1200);
-      }
+      await attemptSignIn();
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
-      if (errMsg.includes("Request ID:") || errMsg.includes("Reject code:")) {
-        setError(
-          "Server connection error. Please check your internet and try again.",
-        );
-      } else {
-        setError("Login failed. Please check your connection.");
+      if (isNetworkError(errMsg)) {
+        // Auto-retry: keep spinner running, retry after 2s
+        handledByRetry = true;
+        setError("Server waking up, please wait...");
+        setRetryCount(1);
+        await new Promise((r) => setTimeout(r, 2000));
+        try {
+          setError("Retrying connection...");
+          await attemptSignIn();
+        } catch (retryErr) {
+          const retryMsg =
+            retryErr instanceof Error ? retryErr.message : String(retryErr);
+          if (isNetworkError(retryMsg)) {
+            setError(
+              "Unable to reach server. The server may still be waking up — please try again in a few seconds.",
+            );
+          } else {
+            setError(`Login failed: ${retryMsg}`);
+          }
+          setShowRetryBtn(true);
+        } finally {
+          setIsLoading(false);
+        }
+        return;
       }
+      setError(`Login failed: ${errMsg}`);
     } finally {
-      setIsLoading(false);
+      if (!handledByRetry) setIsLoading(false);
     }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!actor) {
-      setRegError("Server connection error. Please refresh and try again.");
+      setRegError("Not connected to server. Please wait and try again.");
       return;
     }
     if (!regFullName.trim()) {
@@ -575,10 +623,13 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
     setRegError("");
     setRegSuccess(false);
+    setRegRetryCount(0);
+    setShowRegRetryBtn(false);
     setRegLoading(true);
-    let attempt = 0;
-    const maxAttempts = 2;
-    while (attempt < maxAttempts) {
+    // Wake up the backend canister before registering
+    await ensureAwake(2, 2000);
+
+    const doRegister = async (attempt: number): Promise<void> => {
       try {
         const result = await actor.register(
           regUsername.trim(),
@@ -586,7 +637,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
           regFullName.trim(),
           regScholar.trim(),
         );
-        if (result.__kind__ === "err") {
+        if ("err" in result) {
           const errMsg = result.err;
           if (errMsg.toLowerCase().includes("scholar")) {
             setRegError(
@@ -611,7 +662,6 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
           try {
             const role = await actor.login(savedUsername, savedPassword);
             if (role === Role.invalid) {
-              // Auto-login returned invalid — guide user to sign in manually
               setIdentifier(savedUsername);
               setLoginTab("username");
               setMode("signin");
@@ -623,7 +673,6 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
               onLoginSuccess(role, savedUsername);
             }
           } catch {
-            // Auto-login threw — guide user to sign in manually
             setIdentifier(savedUsername);
             setLoginTab("username");
             setMode("signin");
@@ -633,26 +682,37 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
             );
           }
         }, 1500);
-        return;
       } catch (err) {
-        attempt++;
-        setRegRetryCount(attempt);
-        if (attempt >= maxAttempts) {
-          // Extract meaningful message from IC/network errors
-          let errStr = "";
-          if (err instanceof Error) {
-            errStr = err.message;
-            // IC agent errors often nest the real reason in .cause
-            const cause = (err as unknown as { cause?: { message?: string } })
-              .cause;
-            if (cause?.message) errStr = cause.message;
-          } else if (typeof err === "object" && err !== null) {
-            const anyErr = err as Record<string, unknown>;
-            errStr = String(anyErr.message || anyErr.cause || err);
-          } else {
-            errStr = String(err);
-          }
-          // If errStr still has raw ICP "Request ID" content, show friendly message
+        let errStr = "";
+        if (err instanceof Error) {
+          errStr = err.message;
+          const cause = (err as unknown as { cause?: { message?: string } })
+            .cause;
+          if (cause?.message) errStr = cause.message;
+        } else if (typeof err === "object" && err !== null) {
+          const anyErr = err as Record<string, unknown>;
+          errStr = String(anyErr.message || anyErr.cause || err);
+        } else {
+          errStr = String(err);
+        }
+
+        if (isNetworkError(errStr) && attempt === 0) {
+          // Auto-retry once
+          setRegRetryCount(1);
+          setRegError("Server may be waking up — retrying...");
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+          await doRegister(1);
+          return;
+        }
+
+        // Exceeded retries or non-network error
+        if (isNetworkError(errStr)) {
+          setRegError(
+            "Unable to reach server. Please check your internet connection and try again.",
+          );
+          setShowRegRetryBtn(true);
+        } else {
+          // Clean up the error message
           if (
             errStr.includes("Request ID:") ||
             errStr.includes("Reject code:")
@@ -660,11 +720,8 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
             setRegError(
               "Server connection error. Please check your internet and try again.",
             );
-            setRegLoading(false);
-            return;
-          }
-          // If still too long, grab the first meaningful sentence after a colon
-          if (errStr.length >= 200) {
+            setShowRegRetryBtn(true);
+          } else if (errStr.length > 200) {
             const colonIdx = errStr.indexOf(":");
             if (colonIdx > 0) {
               errStr = errStr.slice(colonIdx + 1, colonIdx + 160).trim();
@@ -672,33 +729,18 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
               errStr =
                 "Registration failed. Please check your connection and try again.";
             }
-          }
-
-          if (
-            errStr.includes("timeout") ||
-            errStr.includes("network") ||
-            errStr.includes("fetch")
-          ) {
-            setRegError(
-              "Server connection error. Please check your internet and try again.",
-            );
-          } else if (
-            errStr.includes("already") ||
-            errStr.includes("taken") ||
-            errStr.includes("registered")
-          ) {
             setRegError(errStr);
-          } else if (errStr.length > 0 && errStr.length < 200) {
+          } else if (errStr.length > 0) {
             setRegError(errStr);
           } else {
             setRegError("Registration failed. Please try again.");
           }
-          setRegLoading(false);
-          return;
         }
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        setRegLoading(false);
       }
-    }
+    };
+
+    await doRegister(0);
     setRegLoading(false);
   };
 
@@ -813,8 +855,13 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                           color: "#fff",
                           boxShadow:
                             "0 0 18px rgba(99,102,241,0.55), 0 2px 8px rgba(0,0,0,0.3)",
+                          fontWeight: 800,
+                          letterSpacing: "0.02em",
                         }
-                      : { color: "#6b7280" }
+                      : {
+                          color: "#c4b5fd",
+                          fontWeight: 700,
+                        }
                   }
                 >
                   Sign In
@@ -835,13 +882,36 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                           color: "#fff",
                           boxShadow:
                             "0 0 18px rgba(99,102,241,0.55), 0 2px 8px rgba(0,0,0,0.3)",
+                          fontWeight: 800,
+                          letterSpacing: "0.02em",
                         }
-                      : { color: "#6b7280" }
+                      : {
+                          color: "#c4b5fd",
+                          fontWeight: 700,
+                        }
                   }
                 >
                   Register
                 </button>
               </div>
+
+              {/* Wake-up status banner */}
+              {isWakingUp && (
+                <div
+                  className="mb-3 flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium"
+                  style={{
+                    background: "rgba(99,102,241,0.08)",
+                    border: "1px solid rgba(99,102,241,0.2)",
+                    color: "#6366f1",
+                  }}
+                >
+                  <Loader2 className="h-4 w-4 animate-spin flex-shrink-0" />
+                  <span>
+                    Connecting to server — this may take a moment on first
+                    load...
+                  </span>
+                </div>
+              )}
 
               <AnimatePresence mode="wait">
                 {mode === "signin" ? (
@@ -906,10 +976,23 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         data-ocid="login.error_state"
-                        className="flex items-center gap-2 text-red-700 bg-red-50 border border-red-300 rounded-xl p-3 mb-4 text-sm"
+                        className="flex items-start gap-2 text-red-700 bg-red-50 border border-red-300 rounded-xl p-3 mb-4 text-sm"
                       >
-                        <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                        {error}
+                        <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <span>{error}</span>
+                          {showRetryBtn && (
+                            <button
+                              type="button"
+                              data-ocid="login.retry.button"
+                              onClick={() => handleSignIn()}
+                              className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-red-600 hover:text-red-800 underline underline-offset-2 transition-colors"
+                            >
+                              <RefreshCw className="h-3 w-3" />
+                              Try Again
+                            </button>
+                          )}
+                        </div>
                       </motion.div>
                     )}
 
@@ -1052,18 +1135,33 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                       <button
                         type="submit"
                         data-ocid="login.submit_button"
-                        disabled={isLoading || !actor || loginSuccess}
+                        disabled={
+                          isLoading ||
+                          loginSuccess ||
+                          isWakingUp ||
+                          (!actor && !isFetching)
+                        }
                         className="w-full py-3.5 rounded-xl text-sm font-bold text-white btn-primary-glow disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-1"
                       >
                         {isLoading ? (
                           <>
-                            <Loader2 className="h-4 w-4 animate-spin" /> Signing
-                            In...
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            {retryCount > 0 ? "Retrying..." : "Signing In..."}
                           </>
                         ) : loginSuccess ? (
                           <>
                             <Loader2 className="h-4 w-4 animate-spin" />{" "}
                             Redirecting...
+                          </>
+                        ) : isWakingUp ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Waking up server...
+                          </>
+                        ) : !actor && isFetching ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Connecting...
                           </>
                         ) : adminMode ? (
                           "Sign In as Admin"
@@ -1123,15 +1221,30 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         data-ocid="register.error_state"
-                        className="flex items-center gap-2 text-red-700 bg-red-50 border border-red-300 rounded-xl p-3 mb-4 text-sm"
+                        className="flex items-start gap-2 text-red-700 bg-red-50 border border-red-300 rounded-xl p-3 mb-4 text-sm"
                       >
-                        <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                        <span>{regError}</span>
-                        {regRetryCount > 0 && (
-                          <span className="ml-auto text-gray-400 text-xs">
-                            Retry {regRetryCount}/2
-                          </span>
-                        )}
+                        <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <span>{regError}</span>
+                          {regRetryCount > 0 && !showRegRetryBtn && (
+                            <span className="ml-2 text-gray-400 text-xs">
+                              Retry {regRetryCount}/2
+                            </span>
+                          )}
+                          {showRegRetryBtn && (
+                            <button
+                              type="button"
+                              data-ocid="register.retry.button"
+                              onClick={
+                                handleRegister as unknown as React.MouseEventHandler
+                              }
+                              className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-red-600 hover:text-red-800 underline underline-offset-2 transition-colors"
+                            >
+                              <RefreshCw className="h-3 w-3" />
+                              Try Again
+                            </button>
+                          )}
+                        </div>
                       </motion.div>
                     )}
 
@@ -1303,13 +1416,27 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                       <button
                         type="submit"
                         data-ocid="register.submit_button"
-                        disabled={regLoading || !actor}
+                        disabled={
+                          regLoading || isWakingUp || (!actor && !isFetching)
+                        }
                         className="w-full py-3.5 rounded-xl text-sm font-bold text-white btn-primary-glow disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
                       >
                         {regLoading ? (
                           <>
                             <Loader2 className="h-4 w-4 animate-spin" />{" "}
-                            Creating Account...
+                            {regRetryCount > 0
+                              ? "Retrying..."
+                              : "Creating Account..."}
+                          </>
+                        ) : isWakingUp ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Waking up server...
+                          </>
+                        ) : !actor && isFetching ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Connecting...
                           </>
                         ) : (
                           "Create Account →"
