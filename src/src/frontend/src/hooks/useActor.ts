@@ -32,9 +32,10 @@ export function useActor() {
     staleTime: Number.POSITIVE_INFINITY,
     enabled: true,
     retry: 3,
-    retryDelay: (attempt) => attempt * 2000,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 8000),
   });
 
+  // When the actor changes, invalidate dependent queries
   useEffect(() => {
     if (actorQuery.data) {
       queryClient.invalidateQueries({

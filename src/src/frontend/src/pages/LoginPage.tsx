@@ -20,12 +20,14 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const { actor, isFetching, isError, refetch } = useActor();
   const [tab, setTab] = useState<"signin" | "register">("signin");
 
+  // Sign In state
   const [siUsername, setSiUsername] = useState("");
   const [siPassword, setSiPassword] = useState("");
   const [siShowPw, setSiShowPw] = useState(false);
   const [siLoading, setSiLoading] = useState(false);
   const [siError, setSiError] = useState("");
 
+  // Register state
   const [regName, setRegName] = useState("");
   const [regScholar, setRegScholar] = useState("");
   const [regUsername, setRegUsername] = useState("");
@@ -85,28 +87,17 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
       }
     };
 
-    const maxRetries = 3;
-    let lastErr: any = null;
-
     try {
       await attemptLogin();
     } catch (err: any) {
       const raw = err?.message || String(err);
       if (isNetworkError(raw)) {
-        lastErr = err;
-        for (let attempt = 1; attempt <= maxRetries; attempt++) {
-          setSiError(`Retrying... (attempt ${attempt}/${maxRetries})`);
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-          try {
-            await attemptLogin();
-            lastErr = null;
-            break;
-          } catch (retryErr: any) {
-            lastErr = retryErr;
-          }
-        }
-        if (lastErr) {
-          setSiError(cleanError(lastErr?.message || String(lastErr)));
+        setSiError("Connecting to server, please wait...");
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        try {
+          await attemptLogin();
+        } catch (retryErr: any) {
+          setSiError(cleanError(retryErr?.message || String(retryErr)));
         }
       } else {
         setSiError(cleanError(raw));
@@ -180,28 +171,17 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
       }, 1500);
     };
 
-    const maxRetries = 3;
-    let lastErr: any = null;
-
     try {
       await attemptRegister();
     } catch (err: any) {
       const raw = err?.message || String(err);
       if (isNetworkError(raw)) {
-        lastErr = err;
-        for (let attempt = 1; attempt <= maxRetries; attempt++) {
-          setRegError(`Retrying... (attempt ${attempt}/${maxRetries})`);
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-          try {
-            await attemptRegister();
-            lastErr = null;
-            break;
-          } catch (retryErr: any) {
-            lastErr = retryErr;
-          }
-        }
-        if (lastErr) {
-          setRegError(cleanError(lastErr?.message || String(lastErr)));
+        setRegError("Connecting to server, please wait...");
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        try {
+          await attemptRegister();
+        } catch (retryErr: any) {
+          setRegError(cleanError(retryErr?.message || String(retryErr)));
         }
       } else {
         setRegError(cleanError(raw));
@@ -223,6 +203,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
       data-ocid="login.page"
     >
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+        {/* Header */}
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-indigo-600 tracking-tight">
             ACADEMIA
@@ -239,19 +220,15 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
             Connecting to server, please wait...
           </div>
         )}
-        {isError && !isFetching && (
-          <div
-            className="flex items-center justify-between gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5 mb-4 text-sm text-red-700"
-            data-ocid="login.error_state"
-          >
-            <span>Unable to reach server. Please try again.</span>
+        {isError && (
+          <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-lg px-4 py-2.5 mb-4 text-sm text-red-700">
+            <span>Unable to reach server.</span>
             <button
               type="button"
               onClick={() => refetch()}
-              className="flex items-center gap-1 px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-md transition-colors flex-shrink-0"
-              data-ocid="login.button"
+              className="flex items-center gap-1 ml-3 font-semibold text-red-600 hover:text-red-800 underline underline-offset-2"
             >
-              <RefreshCw className="w-3 h-3" />
+              <RefreshCw className="w-3.5 h-3.5" />
               Retry
             </button>
           </div>
@@ -268,7 +245,11 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
               setTab("signin");
               setSiError("");
             }}
-            className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${tab === "signin" ? "bg-white text-indigo-600 shadow" : "text-gray-500 hover:text-gray-700"}`}
+            className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${
+              tab === "signin"
+                ? "bg-white text-indigo-600 shadow"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
             data-ocid="login.signin.tab"
           >
             Sign In
@@ -280,7 +261,11 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
               setRegError("");
               setRegSuccess("");
             }}
-            className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${tab === "register" ? "bg-white text-indigo-600 shadow" : "text-gray-500 hover:text-gray-700"}`}
+            className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${
+              tab === "register"
+                ? "bg-white text-indigo-600 shadow"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
             data-ocid="login.register.tab"
           >
             Register
@@ -310,6 +295,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 />
               </div>
             </div>
+
             <div>
               <label
                 htmlFor="si-password"
@@ -342,18 +328,23 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 </button>
               </div>
             </div>
+
             {siError && (
               <div
-                className={`flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm ${siError.includes("Retrying") || siError.includes("Connecting") ? "bg-amber-50 text-amber-700" : "bg-red-50 text-red-700"}`}
+                className={`flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm ${
+                  siError.includes("Connecting")
+                    ? "bg-amber-50 text-amber-700"
+                    : "bg-red-50 text-red-700"
+                }`}
                 data-ocid="login.error_state"
               >
-                {(siError.includes("Retrying") ||
-                  siError.includes("Connecting")) && (
+                {siError.includes("Connecting") && (
                   <span className="w-3.5 h-3.5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
                 )}
                 {siError}
               </div>
             )}
+
             <button
               type="submit"
               disabled={siLoading || isFetching}
@@ -400,6 +391,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 />
               </div>
             </div>
+
             <div>
               <label
                 htmlFor="reg-scholar"
@@ -414,12 +406,13 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                   type="text"
                   value={regScholar}
                   onChange={(e) => setRegScholar(e.target.value)}
-                  placeholder="3–10 digit number (e.g. 617)"
+                  placeholder="3\u201310 digit number (e.g. 617)"
                   className={inputClass}
                   data-ocid="register.input"
                 />
               </div>
             </div>
+
             <div>
               <label
                 htmlFor="reg-username"
@@ -440,6 +433,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 />
               </div>
             </div>
+
             <div>
               <label
                 htmlFor="reg-email"
@@ -461,6 +455,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 />
               </div>
             </div>
+
             <div>
               <label
                 htmlFor="reg-password"
@@ -493,6 +488,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 </button>
               </div>
             </div>
+
             <div>
               <label
                 htmlFor="reg-confirm"
@@ -513,13 +509,17 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 />
               </div>
             </div>
+
             {regError && (
               <div
-                className={`flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm ${regError.includes("Retrying") || regError.includes("Connecting") ? "bg-amber-50 text-amber-700" : "bg-red-50 text-red-700"}`}
+                className={`flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm ${
+                  regError.includes("Connecting")
+                    ? "bg-amber-50 text-amber-700"
+                    : "bg-red-50 text-red-700"
+                }`}
                 data-ocid="register.error_state"
               >
-                {(regError.includes("Retrying") ||
-                  regError.includes("Connecting")) && (
+                {regError.includes("Connecting") && (
                   <span className="w-3.5 h-3.5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
                 )}
                 {regError}
@@ -533,6 +533,7 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 {regSuccess}
               </p>
             )}
+
             <button
               type="submit"
               disabled={regLoading || isFetching}

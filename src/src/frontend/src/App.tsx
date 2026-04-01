@@ -5,14 +5,14 @@ import AdminPanel from "./pages/AdminPanel";
 import CalendarPage from "./pages/CalendarPage";
 import ContactPage from "./pages/ContactPage";
 import HomePage from "./pages/HomePage";
-import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import SubjectPage from "./pages/SubjectPage";
 import SubjectsListPage from "./pages/SubjectsListPage";
+import TeacherProfilePage from "./pages/TeacherProfilePage";
+import TeachersPage from "./pages/TeachersPage";
 
 type Page =
-  | "landing"
   | "login"
   | "home"
   | "subjects"
@@ -23,11 +23,16 @@ type Page =
   | "calendar"
   | "profile"
   | "contact"
-  | "about";
+  | "about"
+  | "teachers"
+  | "teacherProfile";
 
 export default function App() {
-  const [page, setPage] = useState<Page>("landing");
+  const [page, setPage] = useState<Page>("login");
   const [username, setUsername] = useState("");
+  const [selectedTeacherId, setSelectedTeacherId] = useState<number | null>(
+    null,
+  );
 
   function handleLoginSuccess(r: Role, u: string) {
     setUsername(u);
@@ -36,15 +41,16 @@ export default function App() {
 
   function handleLogout() {
     setUsername("");
-    setPage("landing");
+    setPage("login");
   }
 
   function handleNavigate(p: string) {
     setPage(p as Page);
   }
 
-  if (page === "landing") {
-    return <LandingPage onGetStarted={() => setPage("login")} />;
+  function handleSelectTeacher(id: number) {
+    setSelectedTeacherId(id);
+    setPage("teacherProfile");
   }
 
   if (page === "login") {
@@ -117,6 +123,26 @@ export default function App() {
         username={username}
         onNavigate={handleNavigate}
         onLogout={handleLogout}
+      />
+    );
+  }
+
+  if (page === "teachers") {
+    return (
+      <TeachersPage
+        username={username}
+        onNavigate={handleNavigate}
+        onSelectTeacher={handleSelectTeacher}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
+  if (page === "teacherProfile") {
+    return (
+      <TeacherProfilePage
+        teacherId={selectedTeacherId ?? 1}
+        onBack={() => setPage("teachers")}
       />
     );
   }
